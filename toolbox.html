@@ -241,6 +241,17 @@
         .alert.show {
             display: block;
         }
+        .helper-text {
+            margin-top: 8px;
+            color: #777;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .stats-text {
+            margin-top: 12px;
+            color: #666;
+            font-size: 13px;
+        }
     </style>
 </head>
 <body>
@@ -256,6 +267,7 @@
             <button class="tab-btn" data-tab="aes">AES加密</button>
             <button class="tab-btn" data-tab="file-base64">文件Base64</button>
             <button class="tab-btn" data-tab="url">URL编解码</button>
+            <button class="tab-btn" data-tab="sql-in">SQL IN助手</button>
         </div>
 
         <!-- 密码生成器 -->
@@ -472,6 +484,33 @@
             </div>
             <div id="url-error" class="alert alert-error"></div>
         </div>
+
+        <!-- SQL IN助手 -->
+        <div class="tool-panel" id="sql-in-panel">
+            <h2 class="tool-title">SQL IN助手</h2>
+            <div class="form-group">
+                <label>粘贴原始数据</label>
+                <textarea id="sql-in-input" placeholder="可直接粘贴 Excel 中复制的内容，支持多行多列..."></textarea>
+                <p class="helper-text">会自动按换行、制表符拆分，忽略空值，并对单引号进行 SQL 转义。</p>
+            </div>
+            <div class="form-group">
+                <label>输出格式</label>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" id="sql-in-quote" checked> 单引号包裹</label>
+                    <label><input type="checkbox" id="sql-in-distinct" checked> 去重</label>
+                    <label><input type="checkbox" id="sql-in-trim" checked> 去除首尾空格</label>
+                    <label><input type="checkbox" id="sql-in-wrap"> 包含外层括号</label>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="convertSqlIn()">转换</button>
+            <button class="btn btn-secondary" onclick="clearSqlIn()">清空</button>
+            <button class="btn btn-secondary copy-btn" onclick="copyResult('sql-in-output', this)">复制结果</button>
+            <div id="sql-in-stats" class="stats-text"></div>
+            <div class="form-group" style="margin-top: 20px;">
+                <label>输出结果</label>
+                <textarea id="sql-in-output" readonly placeholder="例如: '1001','1002','1003'"></textarea>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -483,6 +522,12 @@
                 this.classList.add('active');
                 document.getElementById(this.dataset.tab + '-panel').classList.add('active');
             });
+        });
+
+        ['sql-in-input', 'sql-in-quote', 'sql-in-distinct', 'sql-in-trim', 'sql-in-wrap'].forEach(id => {
+            const element = document.getElementById(id);
+            const eventName = element.tagName === 'TEXTAREA' ? 'input' : 'change';
+            element.addEventListener(eventName, convertSqlIn);
         });
 
         // ==================== 密码生成器 ====================
@@ -1236,6 +1281,41 @@
                 errorDiv.textContent = '解码失败: ' + e.message;
                 errorDiv.classList.add('show');
             }
+        }
+
+        // ==================== SQL IN助手 ====================
+        function convertSqlIn() {
+            const input = document.getElementById('sql-in-input').value;
+            const withQuote = document.getElementById('sql-in-quote').checked;
+            const distinct = document.getElementById('sql-in-distinct').checked;
+            const trimValue = document.getElementById('sql-in-trim').checked;
+            const wrapIn = document.getElementById('sql-in-wrap').checked;
+            const output = document.getElementById('sql-in-output');
+            const stats = document.getElementById('sql-in-stats');
+
+            const rawItems = input
+                .split(/\r?\n|\t/)
+                .map(item => trimValue ? item.trim() : item)
+                .filter(item => item !== '');
+
+            const values = distinct ? [...new Set(rawItems)] : rawItems;
+
+            const formatted = values.map(value => {
+                const escaped = value.replace(/'/g, "''");
+                return withQuote ? `'${escaped}'` : escaped;
+            });
+
+            const result = wrapIn ? `(${formatted.join(',')})` : formatted.join(',');
+            output.value = result;
+            stats.textContent = values.length
+                ? `共解析 ${rawItems.length} 项，输出 ${values.length} 项。`
+                : '未识别到可用数据。';
+        }
+
+        function clearSqlIn() {
+            document.getElementById('sql-in-input').value = '';
+            document.getElementById('sql-in-output').value = '';
+            document.getElementById('sql-in-stats').textContent = '';
         }
     </script>
 </body>
