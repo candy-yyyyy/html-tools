@@ -2014,6 +2014,40 @@
             colorConvert();
         }
 
+    
+        // ==================== QR 码生成器 ====================
+        function generateQR() {
+            const input = document.getElementById('qr-input').value.trim();
+            const size = document.getElementById('qr-size').value;
+            const errorLevel = document.getElementById('qr-error-level').value;
+            const resultDiv = document.getElementById('qr-result');
+
+            if (!input) {
+                resultDiv.innerHTML = '<span style="color: #999;">请输入内容</span>';
+                return;
+            }
+
+            // 使用 goqr.me API 生成 QR 码
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(input)}&ecc=${errorLevel}`;
+            
+            resultDiv.innerHTML = `<img src="${qrUrl}" alt="QR Code" style="max-width: ${size}px; border: 1px solid #ddd; border-radius: 8px; padding: 10px; background: white;">`;
+        }
+
+        function downloadQR() {
+            const qrImg = document.querySelector('#qr-result img');
+            if (!qrImg) {
+                alert('请先生成 QR 码！');
+                return;
+            }
+
+            // 创建下载链接
+            const link = document.createElement('a');
+            link.href = qrImg.src;
+            link.download = 'qrcode.png';
+            link.target = '_blank';
+            link.click();
+        }
+
     </script>
 </body>
 </html>
