@@ -1,4 +1,5 @@
-# HTML 工具箱
+# | 📊 文本统计分析 | 文本分析与统计 | 中英文统计、常用词、行分析 |
+HTML 工具箱
 
 <p align="center">
   <img src="https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white" alt="HTML5">
@@ -50,6 +51,7 @@
 | 📄 HTML 提取器 | HTML 内容提取 | 提取文本/链接/图片 |
 | 🎨 颜色转换 | 颜色格式转换 | HEX/RGB/HSL互转、预览 |
 | 🆔 UUID 生成器 | 生成 UUID/GUID | v4/v7 支持、格式自定义、批量生成 |
+| 📊 文本统计分析 | 文本分析与统计 | 中英文统计、常用词、行分析 |
 
 ## 🚀 快速开始
 
