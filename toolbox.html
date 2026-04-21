@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>宸ュ叿绠?/title>
+    <title>工具箱</title>
     <style>
         * {
             margin: 0;
@@ -210,7 +210,7 @@
             position: relative;
         }
         .copy-btn.copied::after {
-            content: '宸插鍒?';
+            content: '已复制';
             position: absolute;
             top: -30px;
             left: 50%;
@@ -252,57 +252,66 @@
             color: #666;
             font-size: 13px;
         }
+        .preview-box {
+            margin-top: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>宸ュ叿绠?/h1>
+        <h1>工具箱</h1>
         
         <div class="tabs">
-            <button class="tab-btn active" data-tab="password">瀵嗙爜鐢熸垚鍣?/button>
-            <button class="tab-btn" data-tab="diff">鏂囨湰姣斿</button>
-            <button class="tab-btn" data-tab="json">JSON鏍煎紡鍖?/button>
-            <button class="tab-btn" data-tab="base64">Base64缂栫爜</button>
-            <button class="tab-btn" data-tab="md5">MD5鍔犲瘑</button>
-            <button class="tab-btn" data-tab="aes">AES鍔犲瘑</button>
-            <button class="tab-btn" data-tab="file-base64">鏂囦欢Base64</button>
-            <button class="tab-btn" data-tab="url">URL缂栬В鐮?/button>
-            <button class="tab-btn" data-tab="sql-in">SQL IN鍔╂墜</button>
-            <button class="tab-btn" data-tab="timestamp">鏃堕棿鎴宠浆鎹?/button>
-            <button class="tab-btn" data-tab="html-extractor">HTML鎻愬彇鍣?/button>
-            <button class="tab-btn" data-tab="regex">姝ｅ垯娴嬭瘯</button>
-            <button class="tab-btn" data-tab="color">棰滆壊杞崲</button>
+            <button class="tab-btn active" data-tab="password">密码生成器</button>
+            <button class="tab-btn" data-tab="diff">文本比对</button>
+            <button class="tab-btn" data-tab="json">JSON格式化</button>
+            <button class="tab-btn" data-tab="base64">Base64编码</button>
+            <button class="tab-btn" data-tab="md5">MD5加密</button>
+            <button class="tab-btn" data-tab="aes">AES加密</button>
+            <button class="tab-btn" data-tab="file-base64">文件Base64</button>
+            <button class="tab-btn" data-tab="url">URL编解码</button>
+            <button class="tab-btn" data-tab="sql-in">SQL IN助手</button>
+            <button class="tab-btn" data-tab="timestamp">时间戳转换</button>
+            <button class="tab-btn" data-tab="html-extractor">HTML提取器</button>
+            <button class="tab-btn" data-tab="regex">正则测试</button>
+            <button class="tab-btn" data-tab="color">颜色转换</button>
+            <button class="tab-btn" data-tab="text-splitter">文本分隔</button>
         </div>
 
-        <!-- 瀵嗙爜鐢熸垚鍣?-->
+        <!-- 密码生成器 -->
         <div class="tool-panel active" id="password-panel">
-            <h2 class="tool-title">瀵嗙爜鐢熸垚鍣?/h2>
+            <h2 class="tool-title">密码生成器</h2>
             <div class="form-group">
-                <label>瀵嗙爜闀垮害</label>
+                <label>密码长度</label>
                 <input type="number" id="pwd-length" value="16" min="4" max="128">
             </div>
             <div class="form-group">
-                <label>鍖呭惈瀛楃绫诲瀷</label>
+                <label>包含字符类型</label>
                 <div class="checkbox-group">
-                    <label><input type="checkbox" id="pwd-upper" checked> 澶у啓瀛楁瘝 (A-Z)</label>
-                    <label><input type="checkbox" id="pwd-lower" checked> 灏忓啓瀛楁瘝 (a-z)</label>
-                    <label><input type="checkbox" id="pwd-number" checked> 鏁板瓧 (0-9)</label>
-                    <label><input type="checkbox" id="pwd-symbol" checked> 鐗规畩绗﹀彿 (!@#$%...)</label>
+                    <label><input type="checkbox" id="pwd-upper" checked> 大写字母 (A-Z)</label>
+                    <label><input type="checkbox" id="pwd-lower" checked> 小写字母 (a-z)</label>
+                    <label><input type="checkbox" id="pwd-number" checked> 数字 (0-9)</label>
+                    <label><input type="checkbox" id="pwd-symbol" checked> 特殊符号 (!@#$%...)</label>
                 </div>
             </div>
             <div class="form-group">
-                <label>鎺掗櫎鐩镐技瀛楃</label>
+                <label>排除相似字符</label>
                 <div class="checkbox-group">
-                    <label><input type="checkbox" id="pwd-exclude-similar"> 鎺掗櫎 (0O, 1lI)</label>
-                    <label><input type="checkbox" id="pwd-exclude-ambiguous"> 鎺掗櫎鏄撴贩娣嗙鍙?({}[]()/\'"`~,;:.<>)</label>
+                    <label><input type="checkbox" id="pwd-exclude-similar"> 排除 (0O, 1lI)</label>
+                    <label><input type="checkbox" id="pwd-exclude-ambiguous"> 排除模糊符号({}[]()/\'"`~,;:.<>)</label>
                 </div>
             </div>
             <div class="form-group">
-                <label>鐢熸垚鏁伴噺</label>
+                <label>生成数量</label>
                 <input type="number" id="pwd-count" value="5" min="1" max="20">
             </div>
-            <button class="btn btn-primary" onclick="generatePasswords()">鐢熸垚瀵嗙爜</button>
-            <button class="btn btn-secondary" onclick="copyAllPasswords()">澶嶅埗鍏ㄩ儴</button>
+            <button class="btn btn-primary" onclick="generatePasswords()">生成密码</button>
+            <button class="btn btn-secondary" onclick="copyAllPasswords()">复制全部</button>
             <div id="pwd-result" class="result-box"></div>
             <div class="strength-meter">
                 <div id="pwd-strength" class="strength-bar"></div>
@@ -310,231 +319,232 @@
             <p id="pwd-strength-text" style="margin-top: 8px; color: #666;"></p>
         </div>
 
-        <!-- 鏂囨湰姣斿宸ュ叿 -->
+        <!-- 文本比对工具 -->
         <div class="tool-panel" id="diff-panel">
-            <h2 class="tool-title">鏂囨湰姣斿宸ュ叿</h2>
+            <h2 class="tool-title">文本比对工具</h2>
             <div class="diff-container">
                 <div class="form-group">
-                    <label>鍘熷鏂囨湰</label>
-                    <textarea id="diff-text1" placeholder="璇疯緭鍏ュ師濮嬫枃鏈?.."></textarea>
+                    <label>原始文件</label>
+                    <textarea id="diff-text1" placeholder="请输入原始文本..."></textarea>
                 </div>
                 <div class="form-group">
-                    <label>瀵规瘮鏂囨湰</label>
-                    <textarea id="diff-text2" placeholder="璇疯緭鍏ュ姣旀枃鏈?.."></textarea>
+                    <label>比较文件</label>
+                    <textarea id="diff-text2" placeholder="请输入比较文本..."></textarea>
                 </div>
             </div>
             <div class="form-group">
                 <div class="checkbox-group">
-                    <label><input type="checkbox" id="diff-ignore-case"> 蹇界暐澶у皬鍐?/label>
-                    <label><input type="checkbox" id="diff-ignore-space"> 蹇界暐绌虹櫧瀛楃</label>
-                    <label><input type="checkbox" id="diff-trim-lines"> 鍘婚櫎琛岄灏剧┖鏍?/label>
+                    <label><input type="checkbox" id="diff-ignore-case"> 忽略大小写</label>
+                    <label><input type="checkbox" id="diff-ignore-space"> 忽略空白字符</label>
+                    <label><input type="checkbox" id="diff-trim-lines"> 去除行首尾空格</label>
                 </div>
             </div>
-            <button class="btn btn-primary" onclick="compareText()">寮€濮嬫瘮瀵?/button>
-            <button class="btn btn-secondary" onclick="swapTexts()">浜ゆ崲鏂囨湰</button>
-            <button class="btn btn-secondary" onclick="clearDiff()">娓呯┖</button>
+            <button class="btn btn-primary" onclick="compareText()">开始比对</button>
+            <button class="btn btn-secondary" onclick="swapTexts()">交换文件</button>
+            <button class="btn btn-secondary" onclick="clearDiff()">清空</button>
             <div id="diff-stats" style="margin-top: 15px; color: #666;"></div>
             <div id="diff-result" class="diff-result" style="margin-top: 15px; display: none;"></div>
         </div>
 
-        <!-- JSON鏍煎紡鍖栧伐鍏?-->
+        <!-- JSON格式化工具 -->
         <div class="tool-panel" id="json-panel">
-            <h2 class="tool-title">JSON鏍煎紡鍖栧伐鍏?/h2>
+            <h2 class="tool-title">JSON格式化工具</h2>
             <div class="form-group">
-                <label>杈撳叆JSON</label>
-                <textarea id="json-input" placeholder='璇疯緭鍏SON瀛楃涓诧紝渚嬪: {"name": "test", "value": 123}'></textarea>
+                <label>输入JSON</label>
+                <textarea id="json-input" placeholder='请输入JSON字符串，例如: {"name": "test", "value": 123}'></textarea>
             </div>
             <div class="form-group">
-                <label>缂╄繘绌烘牸鏁?/label>
+                <label>缩进空格数</label>
                 <select id="json-indent">
-                    <option value="2">2涓┖鏍?/option>
-                    <option value="4" selected>4涓┖鏍?/option>
-                    <option value="tab">Tab缂╄繘</option>
+                    <option value="2">2个空格</option>
+                    <option value="4" selected>4个空格</option>
+                    <option value="tab">Tab缩进</option>
                 </select>
             </div>
-            <button class="btn btn-primary" onclick="formatJSON()">鏍煎紡鍖?/button>
-            <button class="btn btn-secondary" onclick="compressJSON()">鍘嬬缉</button>
-            <button class="btn btn-secondary" onclick="validateJSON()">楠岃瘉</button>
-            <button class="btn btn-secondary copy-btn" onclick="copyResult('json-output', this)">澶嶅埗缁撴灉</button>
+            <button class="btn btn-primary" onclick="formatJSON()">格式化</button>
+            <button class="btn btn-secondary" onclick="compressJSON()">压缩</button>
+            <button class="btn btn-secondary" onclick="validateJSON()">验证</button>
+            <button class="btn btn-secondary copy-btn" onclick="copyResult('json-output', this)">复制结果</button>
             <div class="form-group" style="margin-top: 20px;">
-                <label>杈撳嚭缁撴灉</label>
-                <textarea id="json-output" readonly placeholder="鏍煎紡鍖栫粨鏋滃皢鏄剧ず鍦ㄨ繖閲?.."></textarea>
+                <label>输出结果</label>
+                <textarea id="json-output" readonly placeholder="格式化结果将显示在这里..."></textarea>
             </div>
             <div id="json-error" class="alert alert-error"></div>
         </div>
 
-        <!-- Base64缂栫爜 -->
+        <!-- Base64编码 -->
         <div class="tool-panel" id="base64-panel">
-            <h2 class="tool-title">Base64缂栫爜/瑙ｇ爜</h2>
+            <h2 class="tool-title">Base64编码/解码</h2>
             <div class="form-group">
-                <label>杈撳叆鏂囨湰</label>
-                <textarea id="base64-input" placeholder="璇疯緭鍏ヨ缂栫爜鎴栬В鐮佺殑鏂囨湰..."></textarea>
+                <label>输入文本</label>
+                <textarea id="base64-input" placeholder="请输入要编码或解码的文本..."></textarea>
             </div>
             <div class="form-group">
                 <div class="checkbox-group">
-                    <label><input type="checkbox" id="base64-url-safe"> URL瀹夊叏妯″紡 (鏇挎崲 +/ 涓?-_)</label>
-                    <label><input type="checkbox" id="base64-no-padding"> 鍘婚櫎濉厖瀛楃 (=)</label>
+                    <label><input type="checkbox" id="base64-url-safe"> URL安全模式 (替换 +/ 为 -_)</label>
+                    <label><input type="checkbox" id="base64-no-padding"> 去除填充字符 (=)</label>
                 </div>
             </div>
-            <button class="btn btn-primary" onclick="base64Encode()">缂栫爜</button>
-            <button class="btn btn-primary" onclick="base64Decode()">瑙ｇ爜</button>
-            <button class="btn btn-secondary copy-btn" onclick="copyResult('base64-output', this)">澶嶅埗缁撴灉</button>
+            <button class="btn btn-primary" onclick="base64Encode()">编码</button>
+            <button class="btn btn-primary" onclick="base64Decode()">解码</button>
+            <button class="btn btn-secondary copy-btn" onclick="copyResult('base64-output', this)">复制结果</button>
             <div class="form-group" style="margin-top: 20px;">
-                <label>杈撳嚭缁撴灉</label>
-                <textarea id="base64-output" readonly placeholder="缁撴灉灏嗘樉绀哄湪杩欓噷..."></textarea>
+                <label>输出结果</label>
+                <textarea id="base64-output" readonly placeholder="结果将显示在这里..."></textarea>
             </div>
             <div id="base64-error" class="alert alert-error"></div>
         </div>
 
-        <!-- MD5鍔犲瘑 -->
+        <!-- MD5加密 -->
         <div class="tool-panel" id="md5-panel">
-            <h2 class="tool-title">MD5鍔犲瘑</h2>
+            <h2 class="tool-title">MD5加密</h2>
             <div class="form-group">
-                <label>杈撳叆鏂囨湰</label>
-                <textarea id="md5-input" placeholder="璇疯緭鍏ヨ鍔犲瘑鐨勬枃鏈?.."></textarea>
+                <label>输入文本</label>
+                <textarea id="md5-input" placeholder="请输入要加密的文本.."></textarea>
             </div>
             <div class="form-group">
                 <div class="checkbox-group">
-                    <label><input type="checkbox" id="md5-uppercase"> 澶у啓杈撳嚭</label>
-                    <label><input type="checkbox" id="md5-16bit"> 16浣峂D5 (鍙栦腑闂?6浣?</label>
+                    <label><input type="checkbox" id="md5-uppercase"> 大写输出</label>
+                    <label><input type="checkbox" id="md5-16bit"> 16位MD5 (取中间16位)</label>
                 </div>
             </div>
-            <button class="btn btn-primary" onclick="generateMD5()">鐢熸垚MD5</button>
-            <button class="btn btn-secondary copy-btn" onclick="copyResult('md5-output', this)">澶嶅埗缁撴灉</button>
+            <button class="btn btn-primary" onclick="generateMD5()">生成MD5</button>
+            <button class="btn btn-secondary copy-btn" onclick="copyResult('md5-output', this)">复制结果</button>
             <div class="form-group" style="margin-top: 20px;">
-                <label>MD5缁撴灉</label>
-                <input type="text" id="md5-output" readonly placeholder="MD5缁撴灉灏嗘樉绀哄湪杩欓噷...">
+                <label>MD5结果</label>
+                <input type="text" id="md5-output" readonly placeholder="MD5结果将显示在这里...">
             </div>
         </div>
 
-        <!-- AES鍔犲瘑 -->
+        <!-- AES加密 -->
         <div class="tool-panel" id="aes-panel">
-            <h2 class="tool-title">AES鍔犲瘑/瑙ｅ瘑</h2>
+            <h2 class="tool-title">AES加密/解密</h2>
             <div id="aes-warning" class="alert alert-warning">
-                娉ㄦ剰锛氭鍔熻兘浣跨敤Web Crypto API锛岄渶瑕佹祻瑙堝櫒鏀寔銆傚鏋滄偍鐪嬪埌姝ゆ秷鎭紝璇风‘淇濅娇鐢ㄧ幇浠ｆ祻瑙堝櫒銆?
+                注意：此功能使用Web Crypto API，需要浏览器支持。如果您看到此消息，请确保使用现代浏览器。
             </div>
             <div class="form-group">
-                <label>杈撳叆鏂囨湰</label>
-                <textarea id="aes-input" placeholder="璇疯緭鍏ヨ鍔犲瘑鎴栬В瀵嗙殑鏂囨湰..."></textarea>
+                <label>输入文本</label>
+                <textarea id="aes-input" placeholder="请输入要加密或解密的文本..."></textarea>
             </div>
             <div class="form-group">
-                <label>瀵嗛挜 (寤鸿16/24/32瀛楃瀵瑰簲AES-128/192/256)</label>
-                <input type="password" id="aes-key" placeholder="璇疯緭鍏ュ瘑閽?..">
-                <button class="btn btn-secondary" style="margin-top: 10px;" onclick="toggleKeyVisibility()">鏄剧ず/闅愯棌瀵嗛挜</button>
-                <button class="btn btn-secondary" style="margin-top: 10px;" onclick="generateAESKey()">鐢熸垚闅忔満瀵嗛挜</button>
+                <label>密钥 (建议16/24/32字符对应AES-128/192/256)</label>
+                <input type="password" id="aes-key" placeholder="请输入密钥..">
+                <button class="btn btn-secondary" style="margin-top: 10px;" onclick="toggleKeyVisibility()">显示/隐藏密钥</button>
+                <button class="btn btn-secondary" style="margin-top: 10px;" onclick="generateAESKey()">生成随机密钥</button>
             </div>
             <div class="form-group">
-                <label>鍔犲瘑妯″紡</label>
+                <label>加密模式</label>
                 <select id="aes-mode">
-                    <option value="GCM" selected>AES-GCM (鎺ㄨ崘锛屽甫璁よ瘉)</option>
+                    <option value="GCM" selected>AES-GCM (推荐，带认证)</option>
                     <option value="CBC">AES-CBC</option>
                     <option value="CTR">AES-CTR</option>
                 </select>
             </div>
-            <button class="btn btn-primary" onclick="aesEncrypt()">鍔犲瘑</button>
-            <button class="btn btn-primary" onclick="aesDecrypt()">瑙ｅ瘑</button>
-            <button class="btn btn-secondary copy-btn" onclick="copyResult('aes-output', this)">澶嶅埗缁撴灉</button>
+            <button class="btn btn-primary" onclick="aesEncrypt()">加密</button>
+            <button class="btn btn-primary" onclick="aesDecrypt()">解密</button>
+            <button class="btn btn-secondary copy-btn" onclick="copyResult('aes-output', this)">复制结果</button>
             <div class="form-group" style="margin-top: 20px;">
-                <label>杈撳嚭缁撴灉</label>
-                <textarea id="aes-output" readonly placeholder="缁撴灉灏嗘樉绀哄湪杩欓噷..."></textarea>
+                <label>输出结果</label>
+                <textarea id="aes-output" readonly placeholder="结果将显示在这里..."></textarea>
             </div>
             <div id="aes-error" class="alert alert-error"></div>
         </div>
 
-        <!-- 鏂囦欢Base64杞崲 -->
+        <!-- 文件Base64转换 -->
         <div class="tool-panel" id="file-base64-panel">
-            <h2 class="tool-title">鏂囦欢Base64杞崲</h2>
+            <h2 class="tool-title">文件Base64转换</h2>
             <div class="form-group">
-                <label>鏂囦欢杞珺ase64</label>
+                <label>文件转Base64</label>
                 <input type="file" id="file-to-base64-input" style="padding: 8px 0;">
-                <button class="btn btn-primary" style="margin-top: 10px;" onclick="fileToBase64()">杞崲涓築ase64</button>
+                <button class="btn btn-primary" style="margin-top: 10px;" onclick="fileToBase64()">转换为Base64</button>
             </div>
             <div class="form-group">
-                <label>杈撳嚭Base64</label>
-                <textarea id="file-base64-output" readonly placeholder="鏂囦欢鐨凚ase64缂栫爜灏嗘樉绀哄湪杩欓噷..."></textarea>
-                <button class="btn btn-secondary copy-btn" style="margin-top: 10px;" onclick="copyResult('file-base64-output', this)">澶嶅埗</button>
+                <label>输出Base64</label>
+                <textarea id="file-base64-output" readonly placeholder="文件的Base64编码将显示在这里..."></textarea>
+                <button class="btn btn-secondary copy-btn" style="margin-top: 10px;" onclick="copyResult('file-base64-output', this)">复制</button>
             </div>
             <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
             <div class="form-group">
-                <label>Base64杞枃浠?/label>
-                <textarea id="base64-to-file-input" placeholder="璇疯緭鍏ase64缂栫爜..."></textarea>
+                <label>Base64转文件</label>
+                <textarea id="base64-to-file-input" placeholder="请输入Base64编码..."></textarea>
             </div>
             <div class="form-group">
-                <label>鏂囦欢鍚?/label>
-                <input type="text" id="base64-filename" placeholder="渚嬪: image.png">
+                <label>文件名</label>
+                <input type="text" id="base64-filename" placeholder="例如: image.png">
             </div>
-            <button class="btn btn-primary" onclick="base64ToFile()">涓嬭浇鏂囦欢</button>
+            <button class="btn btn-primary" onclick="base64ToFile()">下载文件</button>
             <div id="file-base64-error" class="alert alert-error"></div>
         </div>
 
-        <!-- URL缂栬В鐮?-->
+        <!-- URL编解码 -->
         <div class="tool-panel" id="url-panel">
-            <h2 class="tool-title">URL缂栫爜/瑙ｇ爜</h2>
+            <h2 class="tool-title">URL编码/解码</h2>
             <div class="form-group">
-                <label>杈撳叆鍐呭</label>
-                <textarea id="url-input" placeholder="璇疯緭鍏ヨ缂栫爜鎴栬В鐮佺殑鍐呭..."></textarea>
+                <label>输入内容</label>
+                <textarea id="url-input" placeholder="请输入要编码或解码的内容..."></textarea>
             </div>
             <div class="form-group">
                 <div class="checkbox-group">
-                    <label><input type="checkbox" id="url-component" checked> 浣跨敤encodeURIComponent (缂栫爜鎵€鏈夌壒娈婂瓧绗?</label>
+                    <label><input type="checkbox" id="url-component" checked> 使用encodeURIComponent (编码所有特殊字符)</label>
                 </div>
             </div>
-            <button class="btn btn-primary" onclick="urlEncode()">缂栫爜</button>
-            <button class="btn btn-primary" onclick="urlDecode()">瑙ｇ爜</button>
-            <button class="btn btn-secondary copy-btn" onclick="copyResult('url-output', this)">澶嶅埗缁撴灉</button>
+            <button class="btn btn-primary" onclick="urlEncode()">编码</button>
+            <button class="btn btn-primary" onclick="urlDecode()">解码</button>
+            <button class="btn btn-secondary copy-btn" onclick="copyResult('url-output', this)">复制结果</button>
             <div class="form-group" style="margin-top: 20px;">
-                <label>杈撳嚭缁撴灉</label>
-                <textarea id="url-output" readonly placeholder="缁撴灉灏嗘樉绀哄湪杩欓噷..."></textarea>
+                <label>输出结果</label>
+                <textarea id="url-output" readonly placeholder="结果将显示在这里..."></textarea>
             </div>
             <div id="url-error" class="alert alert-error"></div>
         </div>
 
-        <!-- SQL IN鍔╂墜 -->
+        <!-- SQL IN 助手 -->
         <div class="tool-panel" id="sql-in-panel">
-            <h2 class="tool-title">SQL IN鍔╂墜</h2>
+            <h2 class="tool-title">SQL IN 助手</h2>
             <div class="form-group">
-                <label>绮樿创鍘熷鏁版嵁</label>
-                <textarea id="sql-in-input" placeholder="鍙洿鎺ョ矘璐?Excel 涓鍒剁殑鍐呭锛屾敮鎸佸琛屽鍒?.."></textarea>
-                <p class="helper-text">浼氳嚜鍔ㄦ寜鎹㈣銆佸埗琛ㄧ鎷嗗垎锛屽拷鐣ョ┖鍊硷紝骞跺鍗曞紩鍙疯繘琛?SQL 杞箟銆?/p>
+                <label>粘贴原始数据</label>
+                <textarea id="sql-in-input" placeholder="可直接粘贴 Excel 中复制的内容，支持多行多列.."></textarea>
+                <p class="helper-text">会自动按换行符、制表符拆分，清洗空值，并对单引号进行 SQL 转义。</p>
             </div>
             <div class="form-group">
-                <label>杈撳嚭鏍煎紡</label>
+                <label>输出格式</label>
                 <div class="checkbox-group">
-                    <label><input type="checkbox" id="sql-in-quote" checked> 鍗曞紩鍙峰寘瑁?/label>
-                    <label><input type="checkbox" id="sql-in-distinct" checked> 鍘婚噸</label>
-                    <label><input type="checkbox" id="sql-in-trim" checked> 鍘婚櫎棣栧熬绌烘牸</label>
-                    <label><input type="checkbox" id="sql-in-wrap"> 鍖呭惈澶栧眰鎷彿</label>
+                    <label><input type="checkbox" id="sql-in-quote" checked> 单引号包裹</label>
+                    <label><input type="checkbox" id="sql-in-distinct" checked> 去重</label>
+                    <label><input type="checkbox" id="sql-in-trim" checked> 去除首尾空格</label>
+                    <label><input type="checkbox" id="sql-in-wrap"> 包含外层括号</label>
                 </div>
             </div>
-            <button class="btn btn-primary" onclick="convertSqlIn()">杞崲</button>
-            <button class="btn btn-secondary" onclick="clearSqlIn()">娓呯┖</button>
-            <button class="btn btn-secondary copy-btn" onclick="copyResult('sql-in-output', this)">澶嶅埗缁撴灉</button>
+            <button class="btn btn-primary" onclick="convertSqlIn()">转换</button>
+            <button class="btn btn-secondary" onclick="clearSqlIn()">清空</button>
+            <button class="btn btn-secondary copy-btn" onclick="copyResult('sql-in-output', this)">复制结果</button>
             <div id="sql-in-stats" class="stats-text"></div>
             <div class="form-group" style="margin-top: 20px;">
-                <label>杈撳嚭缁撴灉</label>
-                <textarea id="sql-in-output" readonly placeholder="渚嬪: '1001','1002','1003'"></textarea>
+                <label>输出结果</label>
+                <textarea id="sql-in-output" readonly placeholder="例如: '1001','1002','1003'"></textarea>
             </div>
         </div>
-        <!-- 鏃堕棿鎴宠浆鎹?-->
+        
+        <!-- 时间戳转换器 -->
         <div class="tool-panel" id="timestamp-panel">
-            <h2 class="tool-title">鏃堕棿鎴宠浆鎹㈠櫒</h2>
+            <h2 class="tool-title">时间戳转换器</h2>
             <div class="form-group">
-                <label>褰撳墠鏃堕棿鎴?/label>
+                <label>当前时间戳</label>
                 <div style="display: flex; gap: 10px; align-items: center;">
-                    <input type="text" id="ts-current" readonly placeholder="鐐瑰嚮鑾峰彇褰撳墠鏃堕棿鎴?>
-                    <button class="btn btn-primary" onclick="refreshTimestamp()">鍒锋柊</button>
-                    <button class="btn btn-secondary copy-btn" onclick="copyResult('ts-current', this)">澶嶅埗</button>
+                    <input type="text" id="ts-current" readonly placeholder="点击获取当前时间戳">
+                    <button class="btn btn-primary" onclick="refreshTimestamp()">刷新</button>
+                    <button class="btn btn-secondary copy-btn" onclick="copyResult('ts-current', this)">复制</button>
                 </div>
             </div>
             <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
             <div class="form-group">
-                <label>鏃堕棿鎴宠浆鏃ユ湡</label>
-                <input type="text" id="ts-to-date-input" placeholder="杈撳叆Unix鏃堕棿鎴筹紙绉掓垨姣锛?>
-                <p class="helper-text">鏀寔绉掔骇(10浣?鍜屾绉掔骇(13浣?鏃堕棿鎴?/p>
+                <label>时间戳转日期</label>
+                <input type="text" id="ts-to-date-input" placeholder="输入Unix时间戳（秒或毫秒）">
+                <p class="helper-text">支持秒级(10位)和毫秒级(13位)时间戳</p>
             </div>
-            <button class="btn btn-primary" onclick="timestampToDate()">杞崲涓烘棩鏈?/button>
+            <button class="btn btn-primary" onclick="timestampToDate()">转换为日期</button>
             <div class="form-group" style="margin-top: 15px;">
-                <label>杞崲缁撴灉</label>
+                <label>转换结果</label>
                 <div id="ts-date-result" class="result-box" style="font-family: monospace;">
                     <div id="ts-local"></div>
                     <div id="ts-utc" style="color: #666; font-size: 13px; margin-top: 8px;"></div>
@@ -543,115 +553,116 @@
             </div>
             <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
             <div class="form-group">
-                <label>鏃ユ湡杞椂闂存埑</label>
+                <label>日期转时间戳</label>
                 <input type="datetime-local" id="date-to-ts-input" style="width: 100%;">
             </div>
             <div class="form-group">
-                <label>鏃跺尯</label>
+                <label>时区</label>
                 <select id="ts-timezone">
-                    <option value="local">鏈湴鏃跺尯</option>
+                    <option value="local">本地时区</option>
                     <option value="UTC">UTC</option>
                 </select>
             </div>
-            <button class="btn btn-primary" onclick="dateToTimestamp()">杞崲涓烘椂闂存埑</button>
+            <button class="btn btn-primary" onclick="dateToTimestamp()">转换为时间戳</button>
             <div class="form-group" style="margin-top: 15px;">
-                <label>鏃堕棿鎴崇粨鏋?/label>
+                <label>时间戳结果</label>
                 <div class="result-box">
-                    <div>绉掔骇: <span id="ts-seconds" style="font-family: monospace; cursor: pointer;" onclick="copyToClipboard(this.textContent, this)" title="鐐瑰嚮澶嶅埗"></span></div>
-                    <div style="margin-top: 8px;">姣绾? <span id="ts-milliseconds" style="font-family: monospace; cursor: pointer;" onclick="copyToClipboard(this.textContent, this)" title="鐐瑰嚮澶嶅埗"></span></div>
+                    <div>秒级: <span id="ts-seconds" style="font-family: monospace; cursor: pointer;" onclick="copyToClipboard(this.textContent, this)" title="点击复制"></span></div>
+                    <div style="margin-top: 8px;">毫秒级 <span id="ts-milliseconds" style="font-family: monospace; cursor: pointer;" onclick="copyToClipboard(this.textContent, this)" title="点击复制"></span></div>
                 </div>
             </div>
             <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
             <div class="form-group">
-                <label>澶氭椂鍖烘樉绀?/label>
+                <label>多时区显示</label>
                 <input type="datetime-local" id="tz-input" style="width: 100%;">
-                <p class="helper-text">杈撳叆鏃堕棿鍚庢樉绀哄叏鐞冧富瑕佹椂鍖?/p>
+                <p class="helper-text">输入时间后显示全球主要时区</p>
             </div>
-            <button class="btn btn-primary" onclick="showAllTimezones()">鏄剧ず鏃跺尯</button>
+            <button class="btn btn-primary" onclick="showAllTimezones()">显示时区</button>
             <div id="tz-result" style="margin-top: 15px; font-family: monospace; font-size: 14px;"></div>
         </div>
 
-        <!-- HTML鏂囨湰鎻愬彇鍣?-->
+        <!-- HTML文件提取器 -->
         <div class="tool-panel" id="html-extractor-panel">
-            <h2 class="tool-title">HTML鏂囨湰鎻愬彇鍣?/h2>
+            <h2 class="tool-title">HTML文件提取器</h2>
             <div class="form-group">
-                <label>杈撳叆HTML</label>
-                <textarea id="html-input" placeholder="绮樿创HTML浠ｇ爜锛屽浠庣綉椤靛鍒剁殑鍐呭..." style="min-height: 200px;"></textarea>
+                <label>输入HTML</label>
+                <textarea id="html-input" placeholder="粘贴HTML代码，例如从网页复制的内容..." style="min-height: 200px;"></textarea>
             </div>
             <div class="form-group">
-                <label>鎻愬彇绫诲瀷</label>
+                <label>提取类型</label>
                 <div class="checkbox-group">
-                    <label><input type="checkbox" id="html-extract-text" checked> 鎻愬彇绾枃鏈?/label>
-                    <label><input type="checkbox" id="html-extract-links" checked> 鎻愬彇鎵€鏈夐摼鎺?/label>
-                    <label><input type="checkbox" id="html-extract-images"> 鎻愬彇鍥剧墖URL</label>
-                    <label><input type="checkbox" id="html-clean-whitespace"> 娓呯悊澶氫綑绌虹櫧</label>
+                    <label><input type="checkbox" id="html-extract-text" checked> 提取纯文本</label>
+                    <label><input type="checkbox" id="html-extract-links" checked> 提取所有链接</label>
+                    <label><input type="checkbox" id="html-extract-images"> 提取图片URL</label>
+                    <label><input type="checkbox" id="html-clean-whitespace"> 清理多余空白</label>
                 </div>
             </div>
             <div class="form-group">
-                <label>鏂囨湰澶勭悊閫夐」</label>
+                <label>文件处理选项</label>
                 <div class="checkbox-group">
-                    <label><input type="checkbox" id="html-remove-scripts" checked> 绉婚櫎 script/style 鏍囩</label>
-                    <label><input type="checkbox" id="html-keep-newlines"> 淇濈暀鎹㈣</label>
+                    <label><input type="checkbox" id="html-remove-scripts" checked> 移除 script/style 标签</label>
+                    <label><input type="checkbox" id="html-keep-newlines"> 保持换行</label>
                 </div>
             </div>
-            <button class="btn btn-primary" onclick="extractHTML()">寮€濮嬫彁鍙?/button>
-            <button class="btn btn-secondary" onclick="clearHTMLExtractor()">娓呯┖</button>
-            <button class="btn btn-secondary" onclick="demoHTML()">绀轰緥HTML</button>
+            <button class="btn btn-primary" onclick="extractHTML()">开始提取</button>
+            <button class="btn btn-secondary" onclick="clearHTMLExtractor()">清空</button>
+            <button class="btn btn-secondary" onclick="demoHTML()">示例HTML</button>
             <div class="form-group" style="margin-top: 20px;">
-                <label>鎻愬彇缁撴灉</label>
-                <textarea id="html-output" readonly placeholder="鎻愬彇缁撴灉灏嗘樉绀哄湪杩欓噷..." style="min-height: 200px;"></textarea>
+                <label>提取结果</label>
+                <textarea id="html-output" readonly placeholder="提取结果将显示在这里..." style="min-height: 200px;"></textarea>
             </div>
             <div id="html-stats" class="stats-text"></div>
             <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
-                <button class="btn btn-secondary copy-btn" onclick="copyResult('html-output', this)">澶嶅埗缁撴灉</button>
-                <button class="btn btn-secondary" onclick="downloadHTMLResult()">涓嬭浇涓篢XT鏂囦欢</button>
+                <button class="btn btn-secondary copy-btn" onclick="copyResult('html-output', this)">复制结果</button>
+                <button class="btn btn-secondary" onclick="downloadHTMLResult()">下载为TXT文件</button>
             </div>
         </div>
 
-        <!-- 姝ｅ垯琛ㄨ揪寮忔祴璇?-->
+        <!-- 正则表达式测试 -->
         <div class="tool-panel" id="regex-panel">
-            <h2 class="tool-title">姝ｅ垯琛ㄨ揪寮忔祴璇?/h2>
+            <h2 class="tool-title">正则表达式测试</h2>
             <div class="form-group">
-                <label>姝ｅ垯琛ㄨ揪寮?/label>
+                <label>正则表达式</label>
                 <div style="display: flex; gap: 10px;">
                     <span style="padding: 10px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 6px 0 0 6px; border-right: none; color: #666;">/</span>
-                    <input type="text" id="regex-pattern" placeholder="杈撳叆姝ｅ垯琛ㄨ揪寮忥紝濡? \d+" style="border-radius: 0; flex: 1;">
+                    <input type="text" id="regex-pattern" placeholder="输入正则表达式，例如: \d+" style="border-radius: 0; flex: 1;">
                     <span style="padding: 10px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 0 6px 6px 0; border-left: none; color: #666;">/</span>
                 </div>
             </div>
             <div class="form-group">
-                <label>鏍囧織浣?(Flags)</label>
+                <label>标志位(Flags)</label>
                 <div class="checkbox-group">
-                    <label><input type="checkbox" id="regex-global" checked> g - 鍏ㄥ眬鍖归厤</label>
-                    <label><input type="checkbox" id="regex-ignore-case"> i - 蹇界暐澶у皬鍐?/label>
-                    <label><input type="checkbox" id="regex-multiline"> m - 澶氳妯″紡</label>
-                    <label><input type="checkbox" id="regex-dotall"> s - 鐐瑰彿鍖归厤鎵€鏈?/label>
+                    <label><input type="checkbox" id="regex-global" checked> g - 全局匹配</label>
+                    <label><input type="checkbox" id="regex-ignore-case"> i - 忽略大小写</label>
+                    <label><input type="checkbox" id="regex-multiline"> m - 多行模式</label>
+                    <label><input type="checkbox" id="regex-dotall"> s - 点号匹配所有</label>
                 </div>
             </div>
             <div class="form-group">
-                <label>娴嬭瘯鏂囨湰</label>
-                <textarea id="regex-input" placeholder="杈撳叆瑕佹祴璇曠殑鏂囨湰..."></textarea>
+                <label>测试文本</label>
+                <textarea id="regex-input" placeholder="输入要测试的文本..."></textarea>
             </div>
-            <button class="btn btn-primary" onclick="testRegex()">娴嬭瘯鍖归厤</button>
-            <button class="btn btn-secondary" onclick="clearRegex()">娓呯┖</button>
+            <button class="btn btn-primary" onclick="testRegex()">测试匹配</button>
+            <button class="btn btn-secondary" onclick="clearRegex()">清空</button>
             <div class="form-group" style="margin-top: 20px;">
-                <label>鍖归厤缁撴灉</label>
+                <label>匹配结果</label>
                 <div id="regex-result" class="result-box" style="min-height: 100px; white-space: pre-wrap;"></div>
             </div>
             <div class="form-group">
-                <label>甯哥敤姝ｅ垯绀轰緥</label>
+                <label>常用正则示例</label>
                 <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                    <button class="btn btn-secondary" onclick="setRegex('\\d+')">鏁板瓧</button>
-                    <button class="btn btn-secondary" onclick="setRegex('[a-zA-Z]+')">瀛楁瘝</button>
-                    <button class="btn btn-secondary" onclick="setRegex('\\w+')">鍗曡瘝</button>
-                    <button class="btn btn-secondary" onclick="setRegex('[\\u4e00-\\u9fa5]+')">涓枃</button>
-                    <button class="btn btn-secondary" onclick="setRegex('\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b')">閭</button>
+                    <button class="btn btn-secondary" onclick="setRegex('\\d+')">数字</button>
+                    <button class="btn btn-secondary" onclick="setRegex('[a-zA-Z]+')">字母</button>
+                    <button class="btn btn-secondary" onclick="setRegex('\\w+')">单词</button>
+                    <button class="btn btn-secondary" onclick="setRegex('[\\u4e00-\\u9fa5]+')">中文</button>
+                    <button class="btn btn-secondary" onclick="setRegex('\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b')">邮箱</button>
                     <button class="btn btn-secondary" onclick="setRegex('(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})([/\\w .-]*)*/?')">URL</button>
-                    <button class="btn btn-secondary" onclick="setRegex('^1[3-9]\\d{9}$')">鎵嬫満鍙?/button>
-                    <button class="btn btn-secondary" onclick="setRegex('\\d{4}-\\d{2}-\\d{2}')">鏃ユ湡</button>
+                    <button class="btn btn-secondary" onclick="setRegex('^1[3-9]\\d{9}$')">手机号</button>
+                    <button class="btn btn-secondary" onclick="setRegex('\\d{4}-\\d{2}-\\d{2}')">日期</button>
                 </div>
             </div>
         </div>
+        
         <!-- 颜色转换工具 -->
         <div class="tool-panel" id="color-panel">
             <h2 class="tool-title">颜色转换工具</h2>
@@ -674,44 +685,55 @@
                 <label>转换结果</label>
                 <div id="color-result" class="result-box" style="min-height: 150px;"></div>
             </div>
-        
-        <!-- UUID 生成器 -->
-        <div class="tool-panel" id="uuid-panel">
-            <h2 class="tool-title">UUID/GUID 生成器</h2>
+        </div>
+
+        <!-- 文本分隔合并工具 -->
+        <div class="tool-panel" id="text-splitter-panel">
+            <h2 class="tool-title">文本分隔合并工具</h2>
             <div class="form-group">
-                <label>生成数量</label>
-                <input type="number" id="uuid-count" value="5" min="1" max="50">
+                <label>输入文本</label>
+                <textarea id="text-splitter-input" placeholder="请输入要处理的文本，支持多行输入..." style="min-height: 150px;"></textarea>
             </div>
             <div class="form-group">
-                <label>UUID 版本</label>
+                <label>操作模式</label>
                 <div class="checkbox-group">
-                    <label><input type="radio" name="uuid-version" value="v4" checked> UUID v4 (随机)</label>
-                    <label><input type="radio" name="uuid-version" value="v7"> UUID v7 (时间序，实验性)</label>
+                    <label><input type="radio" name="splitter-mode" value="split" checked> 按分隔符拆分</label>
+                    <label><input type="radio" name="splitter-mode" value="merge"> 合并为一行</label>
+                    <label><input type="radio" name="splitter-mode" value="unique"> 去重</label>
                 </div>
             </div>
-            <div class="form-group">
-                <label>格式选项</label>
+            <div class="form-group" id="split-options">
+                <label>分隔符</label>
+                <input type="text" id="text-splitter-delimiter" placeholder="例如: , ; | \n_space (空格) _tab (制表符)" value=",">
                 <div class="checkbox-group">
-                    <label><input type="checkbox" id="uuid-uppercase"> 大写字母</label>
-                    <label><input type="checkbox" id="uuid-no-hyphen"> 移除连字符</label>
-                    <label><input type="checkbox" id="uuid-braces"> 添加花括号 {}</label>
-                    <label><input type="checkbox" id="uuid-quotes"> 添加引号 ''</label>
+                    <label><input type="checkbox" id="text-splitter-trim"> 去除每项首尾空格</label>
+                    <label><input type="checkbox" id="text-splitter-empty" checked> 移除空项</label>
+                    <label><input type="checkbox" id="text-splitter-discard" checked> 去重</label>
+                </div>
+                <p class="helper-text">支持使用特殊代码：_space 表示空格，_tab 表示制表符，_newline 表示换行</p>
+            </div>
+            <div class="form-group" id="merge-options" style="display: none;">
+                <label>合并分隔符</label>
+                <input type="text" id="text-splitter-merge-delimiter" placeholder="例如: , 或 ; 或 空格" value=",">
+                <div class="checkbox-group">
+                    <label><input type="checkbox" id="text-splitter-merge-trim"> 合并前去除空格</label>
                 </div>
             </div>
-            <div class="form-group">
-                <label>前缀/后缀 (可选)</label>
-                <input type="text" id="uuid-prefix" placeholder="前缀，如：id_">
-                <input type="text" id="uuid-suffix" placeholder="后缀，如：_id" style="margin-top: 8px;">
-            </div>
-            <button class="btn btn-primary" onclick="generateUUIDs()">生成 UUID</button>
-            <button class="btn btn-secondary" onclick="copyAllUUIDs()">复制全部</button>
-            <button class="btn btn-secondary" onclick="clearUUIDs()">清空</button>
+            <button class="btn btn-primary" onclick="processTextSplitter()">处理文本</button>
+            <button class="btn btn-secondary" onclick="clearTextSplitter()">清空</button>
+            <button class="btn btn-secondary" onclick="loadTextSplitterDemo()">示例文本</button>
+            <div id="text-splitter-stats" class="stats-text"></div>
             <div class="form-group" style="margin-top: 20px;">
-                <label>生成结果</label>
-                <div id="uuid-result" class="result-box" style="min-height: 100px;"></div>
+                <label>预览 (前20项)</label>
+                <div id="text-splitter-preview" class="preview-box" style="max-height: 150px; overflow-y: auto;"></div>
             </div>
-            <div id="uuid-stats" class="stats-text"></div>
-        
+            <div class="form-group" style="margin-top: 20px;">
+                <label>输出结果</label>
+                <textarea id="text-splitter-output" readonly placeholder="处理结果将显示在这里..." style="min-height: 150px;"></textarea>
+            </div>
+            <button class="btn btn-secondary copy-btn" onclick="copyResult('text-splitter-output', this)">复制结果</button>
+        </div>
+
         <!-- UUID 生成器 -->
         <div class="tool-panel" id="uuid-panel">
             <h2 class="tool-title">UUID/GUID 生成器</h2>
@@ -749,12 +771,11 @@
             </div>
             <div id="uuid-stats" class="stats-text"></div>
         </div>
-
         
     </div>
 
     <script>
-        // ==================== 鏍囩椤靛垏鎹?====================
+        // ==================== 标签页切换 =====================
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -764,13 +785,22 @@
             });
         });
 
+        // 文本分隔合并工具的模式切换
+        document.querySelectorAll('input[name="splitter-mode"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const mode = this.value;
+                document.getElementById('split-options').style.display = mode === 'split' ? 'block' : 'none';
+                document.getElementById('merge-options').style.display = mode === 'merge' ? 'block' : 'none';
+            });
+        });
+
         ['sql-in-input', 'sql-in-quote', 'sql-in-distinct', 'sql-in-trim', 'sql-in-wrap'].forEach(id => {
             const element = document.getElementById(id);
             const eventName = element.tagName === 'TEXTAREA' ? 'input' : 'change';
             element.addEventListener(eventName, convertSqlIn);
         });
 
-        // ==================== 瀵嗙爜鐢熸垚鍣?====================
+        // ==================== 密码生成器 =====================
         function generatePasswords() {
             const length = parseInt(document.getElementById('pwd-length').value);
             const count = parseInt(document.getElementById('pwd-count').value);
@@ -803,7 +833,7 @@
             if (includeSymbol) chars += symbolChars;
 
             if (!chars) {
-                alert('璇疯嚦灏戦€夋嫨涓€绉嶅瓧绗︾被鍨嬶紒');
+                alert('请至少选择一种字符类型！');
                 return;
             }
 
@@ -824,11 +854,11 @@
                     <span style="color: #999; margin-right: 10px;">${i + 1}.</span>
                     <span style="font-family: monospace;">${p}</span>
                     <button class="btn btn-secondary copy-btn" style="float: right; padding: 4px 12px; margin: 0;" 
-                        onclick="copyToClipboard('${p}', this)">澶嶅埗</button>
+                        onclick="copyToClipboard('${p}', this)">复制</button>
                 </div>`
             ).join('');
 
-            // 璁＄畻瀵嗙爜寮哄害
+            // 计算密码强度
             calculateStrength(passwords[0], chars.length);
         }
 
@@ -839,20 +869,20 @@
             
             let strength, color, text;
             if (entropy < 28) {
-                strength = 20; color = '#dc3545'; text = '闈炲父寮?;
+                strength = 20; color = '#dc3545'; text = '非常弱';
             } else if (entropy < 36) {
-                strength = 40; color = '#fd7e14'; text = '寮?;
+                strength = 40; color = '#fd7e14'; text = '弱';
             } else if (entropy < 60) {
-                strength = 60; color = '#ffc107'; text = '涓瓑';
+                strength = 60; color = '#ffc107'; text = '中等';
             } else if (entropy < 80) {
-                strength = 80; color = '#28a745'; text = '寮?;
+                strength = 80; color = '#28a745'; text = '强';
             } else {
-                strength = 100; color = '#20c997'; text = '闈炲父寮?;
+                strength = 100; color = '#20c997'; text = '非常强';
             }
 
             strengthBar.style.width = strength + '%';
             strengthBar.style.background = color;
-            strengthText.innerHTML = `瀵嗙爜寮哄害: <strong style="color: ${color}">${text}</strong> (鐔靛€? ${entropy.toFixed(1)} bits)`;
+            strengthText.innerHTML = `密码强度: <strong style="color: ${color}">${text}</strong> (熵: ${entropy.toFixed(1)} bits)`;
         }
 
         function copyAllPasswords() {
@@ -860,11 +890,11 @@
                 .map(el => el.textContent).join('\n');
             if (passwords) {
                 navigator.clipboard.writeText(passwords);
-                alert('宸插鍒跺叏閮ㄥ瘑鐮侊紒');
+                alert('已复制全部密码！');
             }
         }
 
-        // ==================== 鏂囨湰姣斿宸ュ叿 ====================
+        // ==================== 文本比对工具 ====================
         function compareText() {
             let text1 = document.getElementById('diff-text1').value;
             let text2 = document.getElementById('diff-text2').value;
@@ -880,7 +910,7 @@
                 lines2 = lines2.map(l => l.trim());
             }
 
-            // 浣跨敤鏈€闀垮叕鍏卞瓙搴忓垪绠楁硶杩涜姣斿
+            // 使用最长公共子序列算法进行比对
             const diff = computeDiff(lines1, lines2, ignoreCase, ignoreSpace);
             
             let addCount = 0, removeCount = 0, unchangedCount = 0;
@@ -901,12 +931,12 @@
             });
 
             document.getElementById('diff-stats').innerHTML = 
-                `<span style="color: #155724;">+${addCount} 鏂板</span> | 
-                 <span style="color: #721c24;">-${removeCount} 鍒犻櫎</span> | 
-                 <span style="color: #666;">${unchangedCount} 鏈彉</span>`;
+                `<span style="color: #155724;">+${addCount} 新增</span> | 
+                 <span style="color: #721c24;">-${removeCount} 删除</span> | 
+                 <span style="color: #666;">${unchangedCount} 未变</span>`;
 
             const resultDiv = document.getElementById('diff-result');
-            resultDiv.innerHTML = html || '<div style="color: #666; padding: 20px; text-align: center;">涓や釜鏂囨湰瀹屽叏鐩稿悓</div>';
+            resultDiv.innerHTML = html || '<div style="color: #666; padding: 20px; text-align: center;">两个文件完全相同</div>';
             resultDiv.style.display = 'block';
         }
 
@@ -918,7 +948,7 @@
                 return s;
             };
 
-            // LCS绠楁硶
+            // LCS算法
             const m = lines1.length, n = lines2.length;
             const dp = Array(m + 1).fill(null).map(() => Array(n + 1).fill(0));
 
@@ -932,7 +962,7 @@
                 }
             }
 
-            // 鍥炴函鐢熸垚diff
+            // 回溯生成diff
             const result = [];
             let i = m, j = n;
             while (i > 0 || j > 0) {
@@ -966,7 +996,7 @@
             document.getElementById('diff-stats').innerHTML = '';
         }
 
-        // ==================== JSON鏍煎紡鍖栧伐鍏?====================
+        // ==================== JSON格式化工具 =====================
         function formatJSON() {
             const input = document.getElementById('json-input').value;
             const indent = document.getElementById('json-indent').value;
@@ -978,7 +1008,7 @@
                 document.getElementById('json-output').value = JSON.stringify(obj, null, space);
                 errorDiv.classList.remove('show');
             } catch (e) {
-                errorDiv.textContent = 'JSON瑙ｆ瀽閿欒: ' + e.message;
+                errorDiv.textContent = 'JSON解析错误: ' + e.message;
                 errorDiv.classList.add('show');
             }
         }
@@ -992,7 +1022,7 @@
                 document.getElementById('json-output').value = JSON.stringify(obj);
                 errorDiv.classList.remove('show');
             } catch (e) {
-                errorDiv.textContent = 'JSON瑙ｆ瀽閿欒: ' + e.message;
+                errorDiv.textContent = 'JSON解析错误: ' + e.message;
                 errorDiv.classList.add('show');
             }
         }
@@ -1003,13 +1033,13 @@
             
             try {
                 JSON.parse(input);
-                errorDiv.textContent = 'JSON鏍煎紡姝ｇ‘锛?;
+                errorDiv.textContent = 'JSON格式正确！';
                 errorDiv.className = 'alert alert-warning show';
                 errorDiv.style.background = '#d4edda';
                 errorDiv.style.color = '#155724';
                 errorDiv.style.borderColor = '#c3e6cb';
             } catch (e) {
-                errorDiv.textContent = 'JSON鏍煎紡閿欒: ' + e.message;
+                errorDiv.textContent = 'JSON格式错误: ' + e.message;
                 errorDiv.className = 'alert alert-error show';
                 errorDiv.style.background = '';
                 errorDiv.style.color = '';
@@ -1017,7 +1047,7 @@
             }
         }
 
-        // ==================== Base64缂栫爜 ====================
+        // ==================== Base64编码 ====================
         function base64Encode() {
             const input = document.getElementById('base64-input').value;
             const urlSafe = document.getElementById('base64-url-safe').checked;
@@ -1025,7 +1055,7 @@
             const errorDiv = document.getElementById('base64-error');
             
             try {
-                // 浣跨敤TextEncoder澶勭悊UTF-8
+                // 使用TextEncoder处理UTF-8
                 const encoder = new TextEncoder();
                 const data = encoder.encode(input);
                 let base64 = btoa(String.fromCharCode(...data));
@@ -1040,7 +1070,7 @@
                 document.getElementById('base64-output').value = base64;
                 errorDiv.classList.remove('show');
             } catch (e) {
-                errorDiv.textContent = '缂栫爜閿欒: ' + e.message;
+                errorDiv.textContent = '编码错误: ' + e.message;
                 errorDiv.classList.add('show');
             }
         }
@@ -1054,7 +1084,7 @@
                 if (urlSafe) {
                     input = input.replace(/-/g, '+').replace(/_/g, '/');
                 }
-                // 琛ュ厖padding
+                // 补全padding
                 while (input.length % 4) {
                     input += '=';
                 }
@@ -1068,12 +1098,12 @@
                 document.getElementById('base64-output').value = decoder.decode(bytes);
                 errorDiv.classList.remove('show');
             } catch (e) {
-                errorDiv.textContent = '瑙ｇ爜閿欒: ' + e.message;
+                errorDiv.textContent = '解码错误: ' + e.message;
                 errorDiv.classList.add('show');
             }
         }
 
-        // ==================== MD5鍔犲瘑 (绾疛S瀹炵幇) ====================
+        // ==================== MD5加密 (纯JS实现) ====================
         function generateMD5() {
             const input = document.getElementById('md5-input').value;
             const uppercase = document.getElementById('md5-uppercase').checked;
@@ -1090,7 +1120,7 @@
             document.getElementById('md5-output').value = hash;
         }
 
-        // MD5绠楁硶绾疛S瀹炵幇
+        // MD5算法纯JS实现
         function md5(string) {
             function rotateLeft(value, shift) {
                 return (value << shift) | (value >>> (32 - shift));
@@ -1245,8 +1275,8 @@
             return wordToHex(a) + wordToHex(b) + wordToHex(c) + wordToHex(d);
         }
 
-        // ==================== AES鍔犲瘑 (浣跨敤Web Crypto API) ====================
-        // 妫€鏌eb Crypto API鏀寔
+        // ==================== AES加密 (使用Web Crypto API) ====================
+        // 检查Web Crypto API支持
         if (!window.crypto || !window.crypto.subtle) {
             document.getElementById('aes-warning').classList.add('show');
         }
@@ -1282,13 +1312,13 @@
             const errorDiv = document.getElementById('aes-error');
 
             if (!password) {
-                errorDiv.textContent = '璇疯緭鍏ュ瘑閽ワ紒';
+                errorDiv.textContent = '请输入密钥！';
                 errorDiv.classList.add('show');
                 return;
             }
 
             if (!window.crypto || !window.crypto.subtle) {
-                errorDiv.textContent = '鎮ㄧ殑娴忚鍣ㄤ笉鏀寔Web Crypto API锛屾棤娉曚娇鐢ˋES鍔犲瘑鍔熻兘锛?;
+                errorDiv.textContent = '您的浏览器不支持Web Crypto API，无法使用AES加密功能！';
                 errorDiv.classList.add('show');
                 return;
             }
@@ -1315,7 +1345,7 @@
                     enc.encode(input)
                 );
 
-                // 缁勫悎: salt + iv + encrypted
+                // 组合: salt + iv + encrypted
                 const combined = new Uint8Array(salt.length + iv.length + encrypted.byteLength);
                 combined.set(salt, 0);
                 combined.set(iv, salt.length);
@@ -1324,7 +1354,7 @@
                 document.getElementById('aes-output').value = btoa(String.fromCharCode(...combined));
                 errorDiv.classList.remove('show');
             } catch (e) {
-                errorDiv.textContent = '鍔犲瘑閿欒: ' + e.message;
+                errorDiv.textContent = '加密错误: ' + e.message;
                 errorDiv.classList.add('show');
             }
         }
@@ -1336,13 +1366,13 @@
             const errorDiv = document.getElementById('aes-error');
 
             if (!password) {
-                errorDiv.textContent = '璇疯緭鍏ュ瘑閽ワ紒';
+                errorDiv.textContent = '请输入密钥！';
                 errorDiv.classList.add('show');
                 return;
             }
 
             if (!window.crypto || !window.crypto.subtle) {
-                errorDiv.textContent = '鎮ㄧ殑娴忚鍣ㄤ笉鏀寔Web Crypto API锛屾棤娉曚娇鐢ˋES瑙ｅ瘑鍔熻兘锛?;
+                errorDiv.textContent = '您的浏览器不支持Web Crypto API，无法使用AES解密功能！';
                 errorDiv.classList.add('show');
                 return;
             }
@@ -1376,7 +1406,7 @@
                 document.getElementById('aes-output').value = dec.decode(decrypted);
                 errorDiv.classList.remove('show');
             } catch (e) {
-                errorDiv.textContent = '瑙ｅ瘑閿欒: ' + e.message + ' (璇风‘璁ゅ瘑閽ュ拰鍔犲瘑妯″紡姝ｇ‘)';
+                errorDiv.textContent = '解密错误: ' + e.message + ' (请确认密钥和加密模式正确)';
                 errorDiv.classList.add('show');
             }
         }
@@ -1398,7 +1428,7 @@
             document.getElementById('aes-key').type = 'text';
         }
 
-        // ==================== 閫氱敤宸ュ叿鍑芥暟 ====================
+        // ==================== 通用工具函数 ====================
         function copyToClipboard(text, btn) {
             navigator.clipboard.writeText(text).then(() => {
                 btn.classList.add('copied');
@@ -1422,13 +1452,13 @@
             return div.innerHTML;
         }
 
-        // ==================== 鏂囦欢Base64杞崲 ====================
+        // ==================== 文件Base64转换 ====================
         function fileToBase64() {
             const fileInput = document.getElementById('file-to-base64-input');
             const errorDiv = document.getElementById('file-base64-error');
             
             if (!fileInput.files || !fileInput.files[0]) {
-                errorDiv.textContent = '璇峰厛閫夋嫨鏂囦欢锛?;
+                errorDiv.textContent = '请先选择文件！';
                 errorDiv.classList.add('show');
                 return;
             }
@@ -1442,7 +1472,7 @@
             };
             
             reader.onerror = function() {
-                errorDiv.textContent = '鏂囦欢璇诲彇澶辫触锛?;
+                errorDiv.textContent = '文件读取失败！';
                 errorDiv.classList.add('show');
             };
             
@@ -1455,7 +1485,7 @@
             const errorDiv = document.getElementById('file-base64-error');
             
             if (!base64Input) {
-                errorDiv.textContent = '璇疯緭鍏ase64缂栫爜锛?;
+                errorDiv.textContent = '请输入Base64编码！';
                 errorDiv.classList.add('show');
                 return;
             }
@@ -1487,12 +1517,12 @@
                 
                 errorDiv.classList.remove('show');
             } catch (e) {
-                errorDiv.textContent = 'Base64瑙ｇ爜澶辫触: ' + e.message;
+                errorDiv.textContent = 'Base64解码失败: ' + e.message;
                 errorDiv.classList.add('show');
             }
         }
 
-        // ==================== URL缂栬В鐮?====================
+        // ==================== URL编解码 ====================
         function urlEncode() {
             const input = document.getElementById('url-input').value;
             const useComponent = document.getElementById('url-component').checked;
@@ -1503,7 +1533,7 @@
                 document.getElementById('url-output').value = result;
                 errorDiv.classList.remove('show');
             } catch (e) {
-                errorDiv.textContent = '缂栫爜澶辫触: ' + e.message;
+                errorDiv.textContent = '编码失败: ' + e.message;
                 errorDiv.classList.add('show');
             }
         }
@@ -1518,12 +1548,12 @@
                 document.getElementById('url-output').value = result;
                 errorDiv.classList.remove('show');
             } catch (e) {
-                errorDiv.textContent = '瑙ｇ爜澶辫触: ' + e.message;
+                errorDiv.textContent = '解码失败: ' + e.message;
                 errorDiv.classList.add('show');
             }
         }
 
-        // ==================== SQL IN鍔╂墜 ====================
+        // ==================== SQL IN 助手 ====================
         function convertSqlIn() {
             const input = document.getElementById('sql-in-input').value;
             const withQuote = document.getElementById('sql-in-quote').checked;
@@ -1548,8 +1578,8 @@
             const result = wrapIn ? `(${formatted.join(',')})` : formatted.join(',');
             output.value = result;
             stats.textContent = values.length
-                ? `鍏辫В鏋?${rawItems.length} 椤癸紝杈撳嚭 ${values.length} 椤广€俙
-                : '鏈瘑鍒埌鍙敤鏁版嵁銆?;
+                ? `共解析${rawItems.length}项，输出 ${values.length} 项。`
+                : '未识别到可用数据。';
         }
 
         function clearSqlIn() {
@@ -1558,34 +1588,34 @@
             document.getElementById('sql-in-stats').textContent = '';
         }
 
-        // ==================== 鏃堕棿鎴宠浆鎹㈠櫒 ====================
+        // ==================== 时间戳转换器 ====================
         function refreshTimestamp() {
             const now = Date.now();
             document.getElementById('ts-current').value = now;
         }
 
-        // 鑷姩鍒锋柊鏃堕棿鎴?
+        // 自动刷新时间戳
         setInterval(refreshTimestamp, 1000);
         refreshTimestamp();
 
         function timestampToDate() {
             const input = document.getElementById('ts-to-date-input').value.trim();
             if (!input) {
-                document.getElementById('ts-local').textContent = '璇疯緭鍏ユ椂闂存埑';
+                document.getElementById('ts-local').textContent = '请输入时间戳';
                 document.getElementById('ts-utc').textContent = '';
                 document.getElementById('ts-relative').textContent = '';
                 return;
             }
 
             let ts = parseInt(input);
-            // 鑷姩鍒ゆ柇绉掔骇杩樻槸姣绾?
+            // 自动判断秒级还是毫秒级
             if (ts < 1e12) {
-                ts *= 1000; // 绉掔骇杞绉掔骇
+                ts *= 1000; // 秒级转毫秒级
             }
 
             const date = new Date(ts);
             
-            // 鏈湴鏃堕棿
+            // 本地时间
             const localStr = date.toLocaleString('zh-CN', {
                 year: 'numeric',
                 month: '2-digit',
@@ -1595,17 +1625,17 @@
                 second: '2-digit',
                 hour12: false
             });
-            document.getElementById('ts-local').textContent = '鏈湴鏃堕棿: ' + localStr;
+            document.getElementById('ts-local').textContent = '本地时间: ' + localStr;
 
-            // UTC鏃堕棿
+            // UTC时间
             const utcStr = date.toISOString().replace('T', ' ').replace(/\.\d{3}Z$/, '');
-            document.getElementById('ts-utc').textContent = 'UTC鏃堕棿: ' + utcStr;
+            document.getElementById('ts-utc').textContent = 'UTC时间: ' + utcStr;
 
-            // 鐩稿鏃堕棿
+            // 相对时间
             const now = Date.now();
             const diff = now - ts;
             const relativeStr = formatRelativeTime(diff);
-            document.getElementById('ts-relative').textContent = '鐩稿: ' + relativeStr;
+            document.getElementById('ts-relative').textContent = '相对: ' + relativeStr;
         }
 
         function formatRelativeTime(diff) {
@@ -1620,20 +1650,20 @@
             const years = Math.floor(days / 365);
 
             let str;
-            if (years > 0) str = years + '骞?;
-            else if (months > 0) str = months + '涓湀';
-            else if (days > 0) str = days + '澶?;
-            else if (hours > 0) str = hours + '灏忔椂';
-            else if (minutes > 0) str = minutes + '鍒嗛挓';
-            else str = seconds + '绉?;
+            if (years > 0) str = years + '年';
+            else if (months > 0) str = months + '个月';
+            else if (days > 0) str = days + '天';
+            else if (hours > 0) str = hours + '小时';
+            else if (minutes > 0) str = minutes + '分钟';
+            else str = seconds + '秒';
 
-            return future ? str + '鍚? : str + '鍓?;
+            return future ? str + '后' : str + '前';
         }
 
         function dateToTimestamp() {
             const input = document.getElementById('date-to-ts-input').value;
             if (!input) {
-                document.getElementById('ts-seconds').textContent = '璇烽€夋嫨鏃ユ湡鏃堕棿';
+                document.getElementById('ts-seconds').textContent = '请选择日期时间';
                 document.getElementById('ts-milliseconds').textContent = '';
                 return;
             }
@@ -1657,26 +1687,26 @@
         function showAllTimezones() {
             const input = document.getElementById('tz-input').value;
             if (!input) {
-                document.getElementById('tz-result').innerHTML = '<div style="color: #999;">璇烽€夋嫨鏃ユ湡鏃堕棿</div>';
+                document.getElementById('tz-result').innerHTML = '<div style="color: #999;">请选择日期时间</div>';
                 return;
             }
 
             const date = new Date(input);
             const timezones = [
-                { name: '鍖椾含 (UTC+8)', offset: 8 },
-                { name: '涓滀含 (UTC+9)', offset: 9 },
-                { name: '绾界害 (UTC-5)', offset: -5 },
-                { name: '娲涙潐鐭?(UTC-8)', offset: -8 },
-                { name: '浼︽暒 (UTC+0)', offset: 0 },
-                { name: '宸撮粠 (UTC+1)', offset: 1 },
-                { name: '鎮夊凹 (UTC+10)', offset: 10 },
-                { name: '鑾柉绉?(UTC+3)', offset: 3 },
-                { name: '鏂板姞鍧?(UTC+8)', offset: 8 },
-                { name: '鍗板害 (UTC+5:30)', offset: 5.5 },
+                { name: '北京 (UTC+8)', offset: 8 },
+                { name: '东京 (UTC+9)', offset: 9 },
+                { name: '纽约 (UTC-5)', offset: -5 },
+                { name: '洛杉矶 (UTC-8)', offset: -8 },
+                { name: '伦敦 (UTC+0)', offset: 0 },
+                { name: '柏林 (UTC+1)', offset: 1 },
+                { name: '悉尼 (UTC+10)', offset: 10 },
+                { name: '新加坡 (UTC+8)', offset: 8 },
+                { name: '迪拜 (UTC+3)', offset: 3 },
+                { name: '孟买 (UTC+5:30)', offset: 5.5 },
             ];
 
             let html = '<table style="width: 100%; border-collapse: collapse;">';
-            html += '<tr style="border-bottom: 1px solid #ddd;"><th style="padding: 8px; text-align: left;">鏃跺尯</th><th style="padding: 8px; text-align: right;">鏃堕棿</th></tr>';
+            html += '<tr style="border-bottom: 1px solid #ddd;"><th style="padding: 8px; text-align: left;">时区</th><th style="padding: 8px; text-align: right;">时间</th></tr>';
 
             timezones.forEach(tz => {
                 const offsetMs = tz.offset * 3600000;
@@ -1694,14 +1724,14 @@
             document.getElementById('tz-result').innerHTML = html;
         }
 
-        // ==================== 姝ｅ垯琛ㄨ揪寮忔祴璇?====================
+        // ==================== 正则表达式测试 ====================
         function testRegex() {
             const pattern = document.getElementById('regex-pattern').value;
             const input = document.getElementById('regex-input').value;
             const resultDiv = document.getElementById('regex-result');
 
             if (!pattern) {
-                resultDiv.innerHTML = '<span style="color: #999;">璇疯緭鍏ユ鍒欒〃杈惧紡</span>';
+                resultDiv.innerHTML = '<span style="color: #999;">请输入正则表达式</span>';
                 return;
             }
 
@@ -1715,7 +1745,7 @@
                 const regex = new RegExp(pattern, flags);
                 
                 if (!input) {
-                    resultDiv.innerHTML = '<span style="color: #999;">璇疯緭鍏ユ祴璇曟枃鏈?/span>';
+                    resultDiv.innerHTML = '<span style="color: #999;">请输入测试文本</span>';
                     return;
                 }
 
@@ -1745,20 +1775,20 @@
                 }
 
                 if (matches.length === 0) {
-                    resultDiv.innerHTML = '<span style="color: #dc2626;">鏈尮閰嶅埌浠讳綍缁撴灉</span>';
+                    resultDiv.innerHTML = '<span style="color: #dc2626;">未匹配到任何结果</span>';
                 } else {
-                    let html = `<div style="margin-bottom: 10px; color: #28a745;">鉁?鎵惧埌 ${matches.length} 涓尮閰?/div>`;
+                    let html = `<div style="margin-bottom: 10px; color: #28a745;">共找到 ${matches.length} 个匹配</div>`;
                     matches.forEach((m, i) => {
                         html += `<div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 4px;">`;
-                        html += `<div style="color: #333; font-weight: 500;">鍖归厤 ${i + 1}: <span style="color: #0066cc;">${escapeHtml(m.text)}</span></div>`;
-                        html += `<div style="color: #666; font-size: 13px; margin-top: 5px;">浣嶇疆: ${m.index}</div>`;
+                        html += `<div style="color: #333; font-weight: 500;">匹配 ${i + 1}: <span style="color: #0066cc;">${escapeHtml(m.text)}</span></div>`;
+                        html += `<div style="color: #666; font-size: 13px; margin-top: 5px;">位置: ${m.index}</div>`;
                         if (m.groups.length > 0) {
-                            html += `<div style="color: #666; font-size: 13px; margin-top: 5px;">鎹曡幏缁? ${m.groups.map((g, gi) => `[${gi + 1}] ${escapeHtml(g || '(绌?')}`).join(', ')}</div>`;
+                            html += `<div style="color: #666; font-size: 13px; margin-top: 5px;">捕获组 ${m.groups.map((g, gi) => `[${gi + 1}] ${escapeHtml(g || '(空)')}`).join(', ')}</div>`;
                         }
                         html += `</div>`;
                     });
                     
-                    // 楂樹寒鏄剧ず鍖归厤缁撴灉
+                    // 高亮显示匹配结果
                     let highlighted = input;
                     let offset = 0;
                     matches.forEach(m => {
@@ -1769,11 +1799,11 @@
                         offset += marked.length - m.text.length;
                     });
                     
-                    html += `<div style="margin-top: 15px; padding: 10px; background: #fff; border: 1px solid #e0e0e0; border-radius: 4px;"><div style="color: #666; font-size: 13px; margin-bottom: 5px;">楂樹寒鏄剧ず:</div>${highlighted}</div>`;
+                    html += `<div style="margin-top: 15px; padding: 10px; background: #fff; border: 1px solid #e0e0e0; border-radius: 4px;"><div style="color: #666; font-size: 13px; margin-bottom: 5px;">高亮显示:</div>${highlighted}</div>`;
                     resultDiv.innerHTML = html;
                 }
             } catch (e) {
-                resultDiv.innerHTML = `<span style="color: #dc2626;">姝ｅ垯琛ㄨ揪寮忛敊璇? ${e.message}</span>`;
+                resultDiv.innerHTML = `<span style="color: #dc2626;">正则表达式错误: ${e.message}</span>`;
             }
         }
 
@@ -1792,11 +1822,11 @@
             testRegex();
         }
 
-        // ==================== HTML鏂囨湰鎻愬彇鍣?====================
+        // ==================== HTML文件提取器 ====================
         function extractHTML() {
             const html = document.getElementById('html-input').value;
             if (!html.trim()) {
-                alert('璇疯緭鍏TML鍐呭锛?);
+                alert('请输入HTML内容！');
                 return;
             }
 
@@ -1810,40 +1840,40 @@
             let result = '';
             let stats = [];
 
-            // 鍒涘缓涓存椂DOM鍏冪礌
+            // 创建临时DOM元素
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
 
-            // 绉婚櫎 script 鍜?style 鏍囩
+            // 移除 script 和 style 标签
             if (removeScripts) {
                 doc.querySelectorAll('script, style, noscript, meta, link').forEach(el => el.remove());
             }
 
             if (extractText) {
-                // 鎻愬彇绾枃鏈?
+                // 提取纯文本
                 const text = doc.body.textContent || doc.body.innerText || '';
                 let formattedText = text;
 
-                // 娓呯悊绌虹櫧
+                // 清理空白
                 if (cleanWhitespace) {
                     formattedText = formattedText.split('\n').map(line => line.trim()).join('\n');
-                    // 鍘婚櫎杩炵画绌鸿
+                    // 去除连续空行
                     formattedText = formattedText.replace(/\n{3,}/g, '\n\n').trim();
                 }
 
-                // 淇濈暀鎹㈣
+                // 保持换行
                 if (!keepNewlines) {
                     formattedText = formattedText.replace(/\n/g, ' ');
                 }
 
                 if (formattedText) {
-                    result += '銆愮函鏂囨湰鍐呭銆慭n' + formattedText;
-                    stats.push(`鏂囨湰: ${formattedText.length} 瀛楃, ${formattedText.split('\n').length} 琛宍);
+                    result += '【纯文本内容】\n' + formattedText;
+                    stats.push(`文本: ${formattedText.length} 字符, ${formattedText.split('\n').length} 行`);
                 }
             }
 
             if (extractLinks) {
-                // 鎻愬彇鎵€鏈夐摼鎺?
+                // 提取所有链接
                 const links = Array.from(doc.querySelectorAll('a[href]'))
                     .map(a => {
                         const text = (a.textContent || '').trim() || a.href;
@@ -1851,29 +1881,29 @@
                     });
 
                 if (links.length > 0) {
-                    result += (result ? '\n\n' : '') + '銆愭墍鏈夐摼鎺ャ€慭n' + links.join('\n');
-                    stats.push(`閾炬帴: ${links.length} 涓猔);
+                    result += (result ? '\n\n' : '') + '【所有链接】\n' + links.join('\n');
+                    stats.push(`链接: ${links.length} 个`);
                 }
             }
 
             if (extractImages) {
-                // 鎻愬彇鍥剧墖URL
+                // 提取图片URL
                 const images = Array.from(doc.querySelectorAll('img[src]'))
-                    .map(img => `![${img.alt || '鍥剧墖'}](${img.src})`);
+                    .map(img => `![${img.alt || '图片'}](${img.src})`);
 
                 if (images.length > 0) {
-                    result += (result ? '\n\n' : '') + '銆愬浘鐗嘦RL銆慭n' + images.join('\n');
-                    stats.push(`鍥剧墖: ${images.length} 寮燻);
+                    result += (result ? '\n\n' : '') + '【图片URL】\n' + images.join('\n');
+                    stats.push(`图片: ${images.length} 张`);
                 }
             }
 
             if (!result) {
-                result = '鏈彁鍙栧埌鍐呭锛岃閫夋嫨鑷冲皯涓€椤规彁鍙栫被鍨嬨€?;
+                result = '未提取到内容，请选择至少一项提取类型。';
             }
 
             document.getElementById('html-output').value = result;
             document.getElementById('html-stats').innerHTML = 
-                stats.join(' | ') || '璇烽€夋嫨鎻愬彇绫诲瀷';
+                stats.join(' | ') || '请选择提取类型';
         }
 
         function clearHTMLExtractor() {
@@ -1892,207 +1922,21 @@
             const demo = `<!DOCTYPE html>
 <html>
 <head>
-    <title>绀轰緥椤甸潰</title>
+    <title>示例页面</title>
 </head>
 <body>
-    <h1>娆㈣繋鏉ュ埌鎴戠殑缃戠珯</h1>
-    <p>杩欐槸涓€涓?strong>绀轰緥HTML</strong>鍐呭锛岀敤浜庢紨绀篐TML鏂囨湰鎻愬彇鍣ㄧ殑鍔熻兘銆?/p>
-    <a href="https://example.com">璁块棶 Example.com</a>
-    <p>鏇村鐩稿叧鍐呭锛?/p>
+    <h1>欢迎来到我的网站</h1>
+    <p>这是一个<strong>示例HTML</strong>内容，用于演示HTML文件提取器的功能。</p>
+    <a href="https://example.com">访问 Example.com</a>
+    <p>更多相关的内容，</p>
     <ul>
-        <li><a href="/about">鍏充簬鎴戜滑</a></li>
-        <li><a href="/contact">鑱旂郴鎴戜滑</a></li>
+        <li><a href="/about">关于我们</a></li>
+        <li><a href="/contact">联系我们</a></li>
     </ul>
-    <img src="https://example.com/image.png" alt="绀轰緥鍥剧墖">
+    <img src="https://example.com/image.png" alt="示例图片">
     <script>
-        // 杩欎釜鑴氭湰鍐呭灏嗚绉婚櫎
+        // 这个脚本内容将被移除
         console.log('This will be removed');
-        // ==================== UUID 生成器 ====================
-        function generateUUIDv4() {
-            if (crypto.randomUUID) {
-                return crypto.randomUUID();
-            }
-            // Fallback for older browsers
-            const bytes = new Uint8Array(16);
-            crypto.getRandomValues(bytes);
-            bytes[6] = (bytes[6] & 0x0f) | 0x40;
-            bytes[8] = (bytes[8] & 0x3f) | 0x80;
-            const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0'));
-            return hex[0]+hex[1]+hex[2]+hex[3]+'-'+hex[4]+hex[5]+'-'+hex[6]+hex[7]+'-'+hex[8]+hex[9]+'-'+hex[10]+hex[11]+hex[12]+hex[13]+hex[14]+hex[15];
-        }
-
-        function generateUUIDv7() {
-            // UUID v7: 48-bit timestamp + random
-            const now = Date.now();
-            const timestamp = Math.floor(now);
-            const bytes = new Uint8Array(16);
-            crypto.getRandomValues(bytes);
-            
-            // Set timestamp (first 6 bytes)
-            for (let i = 5; i >= 0; i--) {
-                bytes[i] = timestamp & 0xff;
-                timestamp /= 256;
-            }
-            
-            // Set version (byte 6) and variant (byte 8)
-            bytes[6] = (bytes[6] & 0x0f) | 0x70;
-            bytes[8] = (bytes[8] & 0x3f) | 0x80;
-            
-            const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0'));
-            return hex[0]+hex[1]+hex[2]+hex[3]+'-'+hex[4]+hex[5]+'-'+hex[6]+hex[7]+'-'+hex[8]+hex[9]+'-'+hex[10]+hex[11]+hex[12]+hex[13]+hex[14]+hex[15];
-        }
-
-        function generateUUIDs() {
-            const count = parseInt(document.getElementById('uuid-count').value) || 5;
-            const version = document.querySelector('input[name="uuid-version"]:checked').value;
-            const uppercase = document.getElementById('uuid-uppercase').checked;
-            const noHyphen = document.getElementById('uuid-no-hyphen').checked;
-            const braces = document.getElementById('uuid-braces').checked;
-            const quotes = document.getElementById('uuid-quotes').checked;
-            const prefix = document.getElementById('uuid-prefix').value || '';
-            const suffix = document.getElementById('uuid-suffix').value || '';
-
-            const uuids = [];
-            for (let i = 0; i < count; i++) {
-                let uuid = version === 'v7' ? generateUUIDv7() : generateUUIDv4();
-                if (uppercase) uuid = uuid.toUpperCase();
-                if (noHyphen) uuid = uuid.replace(/-/g, '');
-                if (braces) uuid = '{' + uuid + '}';
-                if (quotes) uuid = "'" + uuid + "'";
-                uuids.push(prefix + uuid + suffix);
-            }
-
-            const resultDiv = document.getElementById('uuid-result');
-            resultDiv.innerHTML = uuids.map((u, i) => 
-                '<div style="padding: 8px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">' +
-                '<span style="color: #999; margin-right: 10px;">' + (i + 1) + '.</span>' +
-                '<span style="font-family: monospace; flex: 1;">' + u + '</span>' +
-                '<button class="btn btn-secondary copy-btn" style="padding: 4px 12px; margin-left: 10px;" ' +
-                'onclick="copyToClipboard(\'' + u.replace(/'/g, "\\'") + '\', this)">复制</button>' +
-                '</div>'
-            ).join('');
-
-            document.getElementById('uuid-stats').textContent = '已生成 ' + count + ' 个 UUID ' + version.toUpperCase();
-        }
-
-        function copyAllUUIDs() {
-            const uuids = [...document.querySelectorAll('#uuid-result span[style*="monospace"]')]
-                .map(el => el.textContent).join('\n');
-            if (uuids) {
-                navigator.clipboard.writeText(uuids);
-                const btn = event.target;
-                btn.classList.add('copied');
-                setTimeout(() => btn.classList.remove('copied'), 1500);
-            }
-        }
-
-        function clearUUIDs() {
-            document.getElementById('uuid-result').innerHTML = '';
-            document.getElementById('uuid-stats').textContent = '';
-            document.getElementById('uuid-count').value = 5;
-            document.getElementById('uuid-uppercase').checked = false;
-            document.getElementById('uuid-no-hyphen').checked = false;
-            document.getElementById('uuid-braces').checked = false;
-            document.getElementById('uuid-quotes').checked = false;
-            document.getElementById('uuid-prefix').value = '';
-            document.getElementById('uuid-suffix').value = '';
-            document.querySelector('input[name="uuid-version"][value="v4"]').checked = true;
-        }
-
-
-        // ==================== UUID 生成器 ====================
-        function generateUUIDv4() {
-            if (crypto.randomUUID) {
-                return crypto.randomUUID();
-            }
-            // Fallback for older browsers
-            const bytes = new Uint8Array(16);
-            crypto.getRandomValues(bytes);
-            bytes[6] = (bytes[6] & 0x0f) | 0x40;
-            bytes[8] = (bytes[8] & 0x3f) | 0x80;
-            const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0'));
-            return hex[0]+hex[1]+hex[2]+hex[3]+'-'+hex[4]+hex[5]+'-'+hex[6]+hex[7]+'-'+hex[8]+hex[9]+'-'+hex[10]+hex[11]+hex[12]+hex[13]+hex[14]+hex[15];
-        }
-
-        function generateUUIDv7() {
-            // UUID v7: 48-bit timestamp + random
-            const now = Date.now();
-            const timestamp = Math.floor(now);
-            const bytes = new Uint8Array(16);
-            crypto.getRandomValues(bytes);
-            
-            // Set timestamp (first 6 bytes)
-            for (let i = 5; i >= 0; i--) {
-                bytes[i] = timestamp & 0xff;
-                timestamp /= 256;
-            }
-            
-            // Set version (byte 6) and variant (byte 8)
-            bytes[6] = (bytes[6] & 0x0f) | 0x70;
-            bytes[8] = (bytes[8] & 0x3f) | 0x80;
-            
-            const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0'));
-            return hex[0]+hex[1]+hex[2]+hex[3]+'-'+hex[4]+hex[5]+'-'+hex[6]+hex[7]+'-'+hex[8]+hex[9]+'-'+hex[10]+hex[11]+hex[12]+hex[13]+hex[14]+hex[15];
-        }
-
-        function generateUUIDs() {
-            const count = parseInt(document.getElementById('uuid-count').value) || 5;
-            const version = document.querySelector('input[name="uuid-version"]:checked').value;
-            const uppercase = document.getElementById('uuid-uppercase').checked;
-            const noHyphen = document.getElementById('uuid-no-hyphen').checked;
-            const braces = document.getElementById('uuid-braces').checked;
-            const quotes = document.getElementById('uuid-quotes').checked;
-            const prefix = document.getElementById('uuid-prefix').value || '';
-            const suffix = document.getElementById('uuid-suffix').value || '';
-
-            const uuids = [];
-            for (let i = 0; i < count; i++) {
-                let uuid = version === 'v7' ? generateUUIDv7() : generateUUIDv4();
-                if (uppercase) uuid = uuid.toUpperCase();
-                if (noHyphen) uuid = uuid.replace(/-/g, '');
-                if (braces) uuid = '{' + uuid + '}';
-                if (quotes) uuid = "'" + uuid + "'";
-                uuids.push(prefix + uuid + suffix);
-            }
-
-            const resultDiv = document.getElementById('uuid-result');
-            resultDiv.innerHTML = uuids.map((u, i) => 
-                '<div style="padding: 8px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">' +
-                '<span style="color: #999; margin-right: 10px;">' + (i + 1) + '.</span>' +
-                '<span style="font-family: monospace; flex: 1;">' + u + '</span>' +
-                '<button class="btn btn-secondary copy-btn" style="padding: 4px 12px; margin-left: 10px;" ' +
-                'onclick="copyToClipboard(\'' + u.replace(/'/g, "\\'") + '\', this)">复制</button>' +
-                '</div>'
-            ).join('');
-
-            document.getElementById('uuid-stats').textContent = '已生成 ' + count + ' 个 UUID ' + version.toUpperCase();
-        }
-
-        function copyAllUUIDs() {
-            const uuids = [...document.querySelectorAll('#uuid-result span[style*="monospace"]')]
-                .map(el => el.textContent).join('\n');
-            if (uuids) {
-                navigator.clipboard.writeText(uuids);
-                const btn = event.target;
-                btn.classList.add('copied');
-                setTimeout(() => btn.classList.remove('copied'), 1500);
-            }
-        }
-
-        function clearUUIDs() {
-            document.getElementById('uuid-result').innerHTML = '';
-            document.getElementById('uuid-stats').textContent = '';
-            document.getElementById('uuid-count').value = 5;
-            document.getElementById('uuid-uppercase').checked = false;
-            document.getElementById('uuid-no-hyphen').checked = false;
-            document.getElementById('uuid-braces').checked = false;
-            document.getElementById('uuid-quotes').checked = false;
-            document.getElementById('uuid-prefix').value = '';
-            document.getElementById('uuid-suffix').value = '';
-            document.querySelector('input[name="uuid-version"][value="v4"]').checked = true;
-        }
-
-
     </script>
 </body>
 </html>`;
@@ -2102,7 +1946,7 @@
         function downloadHTMLResult() {
             const content = document.getElementById('html-output').value;
             if (!content) {
-                alert('娌℃湁鍙笅杞界殑鍐呭锛?);
+                alert('没有可下载的内容！');
                 return;
             }
             const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
@@ -2274,38 +2118,122 @@
             colorConvert();
         }
 
-    
-        // ==================== QR 码生成器 ====================
-        function generateQR() {
-            const input = document.getElementById('qr-input').value.trim();
-            const size = document.getElementById('qr-size').value;
-            const errorLevel = document.getElementById('qr-error-level').value;
-            const resultDiv = document.getElementById('qr-result');
+        // ==================== 文本分隔合并工具 ====================
+        function processTextSplitter() {
+            const input = document.getElementById('text-splitter-input').value;
+            const mode = document.querySelector('input[name="splitter-mode"]:checked').value;
+            const errorDiv = document.getElementById('text-splitter-error');
 
-            if (!input) {
-                resultDiv.innerHTML = '<span style="color: #999;">请输入内容</span>';
-                return;
+            try {
+                let result = '';
+                let stats = '';
+                
+                if (mode === 'split') {
+                    const delimiter = document.getElementById('text-splitter-delimiter').value;
+                    const trim = document.getElementById('text-splitter-trim').checked;
+                    const removeEmpty = document.getElementById('text-splitter-empty').checked;
+                    const dedup = document.getElementById('text-splitter-discard').checked;
+
+                    // 处理特殊分隔符
+                    let realDelimiter = delimiter.replace(/_space/g, ' ').replace(/_tab/g, '\t').replace(/_newline/g, '\n');
+                    if (realDelimiter === '\\n') realDelimiter = '\n';
+
+                    // 分割
+                    let items = input.split(realDelimiter);
+                    
+                    // 统计
+                    stats = `原始项数: ${items.length}，`;
+                    
+                    // 去除首尾空格
+                    if (trim) {
+                        items = items.map(item => item.trim());
+                    }
+                    
+                    // 移除空项
+                    if (removeEmpty) {
+                        items = items.filter(item => item !== '');
+                    }
+                    
+                    // 去重
+                    if (dedup) {
+                        items = [...new Set(items)];
+                    }
+
+                    stats += `去重后: ${items.length}，筛选后: ${items.length}`;
+                    
+                    // 保留换行输出
+                    result = items.join('\n');
+                } 
+                else if (mode === 'merge') {
+                    const mergeDelimiter = document.getElementById('text-splitter-merge-delimiter').value.replace(/_space/g, ' ').replace(/_tab/g, '\t');
+                    const trimBeforeMerge = document.getElementById('text-splitter-merge-trim').checked;
+
+                    // 按行分割
+                    let items = input.split('\n');
+                    
+                    if (trimBeforeMerge) {
+                        items = items.map(item => item.trim());
+                    }
+                    
+                    items = items.filter(item => item !== '');
+                    
+                    result = items.join(mergeDelimiter);
+                    stats = `合并: ${items.length} 行 → 单行`;
+                }
+                else if (mode === 'unique') {
+                    // 按行去重
+                    let items = input.split('\n').map(item => item.trim()).filter(item => item !== '');
+                    const uniqueItems = [...new Set(items)];
+                    
+                    result = uniqueItems.join('\n');
+                    stats = `去重: ${items.length} → ${uniqueItems.length}`;
+                }
+
+                document.getElementById('text-splitter-output').value = result;
+                document.getElementById('text-splitter-stats').textContent = stats;
+                
+                // 更新预览（前20项）
+                const previewItems = result.split('\n').slice(0, 20);
+                const previewBox = document.getElementById('text-splitter-preview');
+                previewBox.innerHTML = '<ul style="padding-left: 20px; margin: 0;">' + 
+                    previewItems.map(item => `<li style="white-space: pre-wrap;">${escapeHtml(item)}</li>`).join('') + 
+                    '</ul>';
+                
+                if (result.split('\n').length > 20) {
+                    previewBox.innerHTML += '<p style="color: #666; margin-top: 5px; font-size: 12px;">... (共' + result.split('\n').length + '行，仅显示前20行)</p>';
+                }
+                
+            } catch (e) {
+                alert('处理失败: ' + e.message);
             }
-
-            // 使用 goqr.me API 生成 QR 码
-            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(input)}&ecc=${errorLevel}`;
-            
-            resultDiv.innerHTML = `<img src="${qrUrl}" alt="QR Code" style="max-width: ${size}px; border: 1px solid #ddd; border-radius: 8px; padding: 10px; background: white;">`;
         }
 
-        function downloadQR() {
-            const qrImg = document.querySelector('#qr-result img');
-            if (!qrImg) {
-                alert('请先生成 QR 码！');
-                return;
-            }
+        function clearTextSplitter() {
+            document.getElementById('text-splitter-input').value = '';
+            document.getElementById('text-splitter-output').value = '';
+            document.getElementById('text-splitter-stats').textContent = '';
+            document.getElementById('text-splitter-preview').innerHTML = '';
+            document.getElementById('text-splitter-delimiter').value = ',';
+            document.getElementById('text-splitter-merge-delimiter').value = ',';
+            document.getElementById('text-splitter-trim').checked = true;
+            document.getElementById('text-splitter-empty').checked = true;
+            document.getElementById('text-splitter-discard').checked = true;
+            document.getElementById('text-splitter-merge-trim').checked = false;
+        }
 
-            // 创建下载链接
-            const link = document.createElement('a');
-            link.href = qrImg.src;
-            link.download = 'qrcode.png';
-            link.target = '_blank';
-            link.click();
+        function loadTextSplitterDemo() {
+            const demo = `Apple
+Banana
+Cherry
+Apple
+  Date  
+Elderberry
+Cherry
+Fig
+Grape
+Apple`;
+            document.getElementById('text-splitter-input').value = demo;
+            processTextSplitter();
         }
 
         // ==================== UUID 生成器 ====================
@@ -2313,7 +2241,7 @@
             if (crypto.randomUUID) {
                 return crypto.randomUUID();
             }
-            // Fallback for older browsers
+            // Fallbcak for older browsers
             const bytes = new Uint8Array(16);
             crypto.getRandomValues(bytes);
             bytes[6] = (bytes[6] & 0x0f) | 0x40;
@@ -2399,101 +2327,6 @@
             document.getElementById('uuid-suffix').value = '';
             document.querySelector('input[name="uuid-version"][value="v4"]').checked = true;
         }
-
-
-        // ==================== UUID 生成器 ====================
-        function generateUUIDv4() {
-            if (crypto.randomUUID) {
-                return crypto.randomUUID();
-            }
-            // Fallback for older browsers
-            const bytes = new Uint8Array(16);
-            crypto.getRandomValues(bytes);
-            bytes[6] = (bytes[6] & 0x0f) | 0x40;
-            bytes[8] = (bytes[8] & 0x3f) | 0x80;
-            const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0'));
-            return hex[0]+hex[1]+hex[2]+hex[3]+'-'+hex[4]+hex[5]+'-'+hex[6]+hex[7]+'-'+hex[8]+hex[9]+'-'+hex[10]+hex[11]+hex[12]+hex[13]+hex[14]+hex[15];
-        }
-
-        function generateUUIDv7() {
-            // UUID v7: 48-bit timestamp + random
-            const now = Date.now();
-            const timestamp = Math.floor(now);
-            const bytes = new Uint8Array(16);
-            crypto.getRandomValues(bytes);
-            
-            // Set timestamp (first 6 bytes)
-            for (let i = 5; i >= 0; i--) {
-                bytes[i] = timestamp & 0xff;
-                timestamp /= 256;
-            }
-            
-            // Set version (byte 6) and variant (byte 8)
-            bytes[6] = (bytes[6] & 0x0f) | 0x70;
-            bytes[8] = (bytes[8] & 0x3f) | 0x80;
-            
-            const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0'));
-            return hex[0]+hex[1]+hex[2]+hex[3]+'-'+hex[4]+hex[5]+'-'+hex[6]+hex[7]+'-'+hex[8]+hex[9]+'-'+hex[10]+hex[11]+hex[12]+hex[13]+hex[14]+hex[15];
-        }
-
-        function generateUUIDs() {
-            const count = parseInt(document.getElementById('uuid-count').value) || 5;
-            const version = document.querySelector('input[name="uuid-version"]:checked').value;
-            const uppercase = document.getElementById('uuid-uppercase').checked;
-            const noHyphen = document.getElementById('uuid-no-hyphen').checked;
-            const braces = document.getElementById('uuid-braces').checked;
-            const quotes = document.getElementById('uuid-quotes').checked;
-            const prefix = document.getElementById('uuid-prefix').value || '';
-            const suffix = document.getElementById('uuid-suffix').value || '';
-
-            const uuids = [];
-            for (let i = 0; i < count; i++) {
-                let uuid = version === 'v7' ? generateUUIDv7() : generateUUIDv4();
-                if (uppercase) uuid = uuid.toUpperCase();
-                if (noHyphen) uuid = uuid.replace(/-/g, '');
-                if (braces) uuid = '{' + uuid + '}';
-                if (quotes) uuid = "'" + uuid + "'";
-                uuids.push(prefix + uuid + suffix);
-            }
-
-            const resultDiv = document.getElementById('uuid-result');
-            resultDiv.innerHTML = uuids.map((u, i) => 
-                '<div style="padding: 8px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">' +
-                '<span style="color: #999; margin-right: 10px;">' + (i + 1) + '.</span>' +
-                '<span style="font-family: monospace; flex: 1;">' + u + '</span>' +
-                '<button class="btn btn-secondary copy-btn" style="padding: 4px 12px; margin-left: 10px;" ' +
-                'onclick="copyToClipboard(\'' + u.replace(/'/g, "\\'") + '\', this)">复制</button>' +
-                '</div>'
-            ).join('');
-
-            document.getElementById('uuid-stats').textContent = '已生成 ' + count + ' 个 UUID ' + version.toUpperCase();
-        }
-
-        function copyAllUUIDs() {
-            const uuids = [...document.querySelectorAll('#uuid-result span[style*="monospace"]')]
-                .map(el => el.textContent).join('\n');
-            if (uuids) {
-                navigator.clipboard.writeText(uuids);
-                const btn = event.target;
-                btn.classList.add('copied');
-                setTimeout(() => btn.classList.remove('copied'), 1500);
-            }
-        }
-
-        function clearUUIDs() {
-            document.getElementById('uuid-result').innerHTML = '';
-            document.getElementById('uuid-stats').textContent = '';
-            document.getElementById('uuid-count').value = 5;
-            document.getElementById('uuid-uppercase').checked = false;
-            document.getElementById('uuid-no-hyphen').checked = false;
-            document.getElementById('uuid-braces').checked = false;
-            document.getElementById('uuid-quotes').checked = false;
-            document.getElementById('uuid-prefix').value = '';
-            document.getElementById('uuid-suffix').value = '';
-            document.querySelector('input[name="uuid-version"][value="v4"]').checked = true;
-        }
-
-
     </script>
 </body>
 </html>
