@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>工具箱</title>
+    <script src="qr-code-generator.js"></script>
     <style>
         * {
             margin: 0;
@@ -281,6 +282,7 @@
             <button class="tab-btn" data-tab="regex">正则测试</button>
             <button class="tab-btn" data-tab="color">颜色转换</button>
             <button class="tab-btn" data-tab="text-splitter">文本分隔</button>
+            <button class="tab-btn" data-tab="qr-code">QR码生成</button>
         </div>
 
         <!-- 密码生成器 -->
@@ -525,6 +527,36 @@
             </div>
         </div>
         
+        
+        <!-- JSON 转 CSV 工具 -->
+        <div class="tool-panel" id="json-csv-panel">
+            <h2 class="tool-title">JSON 转 CSV 工具</h2>
+            <div class="form-group">
+                <label>输入 JSON 数组</label>
+                <textarea id="json-csv-input" placeholder="请输入 JSON 数组" rows="5"></textarea>
+            </div>
+            <div class="form-group">
+                <label>CSV 分隔符</label>
+                <select id="json-csv-delimiter">
+                    <option value=",">逗号 (,)</option>
+                    <option value=";">分号 (;)</option>
+                    <option value="&#9;">制表符 (Tab)</option>
+                    <option value="|">竖线 (|)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label><input type="checkbox" id="json-csv-bom" checked> 添加 BOM 头（支持 Excel 中文）</label>
+            </div>
+            <button class="btn btn-primary" onclick="convertJsonToCsv()">转换</button>
+            <button class="btn btn-secondary" onclick="copyCsvResult()">复制 CSV</button>
+            <button class="btn btn-secondary" onclick="downloadCsv()">下载 CSV 文件</button>
+            <div class="form-group" style="margin-top: 20px;">
+                <label>CSV 预览</label>
+                <textarea id="json-csv-output" readonly placeholder="转换结果将显示在这里..." rows="5"></textarea>
+            </div>
+            <div id="json-csv-stats" class="stats-text"></div>
+        </div>
+
         <!-- 时间戳转换器 -->
         <div class="tool-panel" id="timestamp-panel">
             <h2 class="tool-title">时间戳转换器</h2>
@@ -732,6 +764,48 @@
                 <textarea id="text-splitter-output" readonly placeholder="处理结果将显示在这里..." style="min-height: 150px;"></textarea>
             </div>
             <button class="btn btn-secondary copy-btn" onclick="copyResult('text-splitter-output', this)">复制结果</button>
+        </div>
+
+        <!-- QR码生成器 -->
+        <div class="tool-panel" id="qr-code-panel">
+            <h2 class="tool-title">QR码生成器</h2>
+            <div class="form-group">
+                <label>输入内容</label>
+                <textarea id="qr-input" placeholder="请输入要生成QR码的内容（URL、文本、联系方式等）..." style="min-height: 120px;"></textarea>
+            </div>
+            <div class="form-group">
+                <label>二维码尺寸</label>
+                <select id="qr-size">
+                    <option value="200">200x200 像素</option>
+                    <option value="300" selected>300x300 像素</option>
+                    <option value="400">400x400 像素</option>
+                    <option value="500">500x500 像素</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>颜色设置</label>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-size: 13px;">前景色</label>
+                        <input type="color" id="qr-foreground" value="#000000" style="width: 60px; height: 30px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-size: 13px;">背景色</label>
+                        <input type="color" id="qr-background" value="#ffffff" style="width: 60px; height: 30px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="generateQRCode()">生成QR码</button>
+            <button class="btn btn-secondary" onclick="clearQRCode()">清空</button>
+            <button class="btn btn-secondary" onclick="downloadQRCode()">下载图片</button>
+            <div class="form-group" style="margin-top: 20px;">
+                <label>生成结果</label>
+                <div id="qr-result" style="text-align: center; padding: 20px; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; min-height: 220px; display: flex; align-items: center; justify-content: center;">
+                    <div style="color: #999;">点击“生成QR码”开始</div>
+                </div>
+            </div>
+            <div id="qr-error" class="alert alert-error"></div>
+            <p class="helper-text" style="margin-top: 15px;">💡 提示：可以输入网址、文本、电话号码、邮箱地址等内容。扫描生成的QR码即可快速访问或复制内容。</p>
         </div>
 
         <!-- UUID 生成器 -->
@@ -2236,6 +2310,75 @@ Apple`;
             processTextSplitter();
         }
 
+        // ==================== QR码生成器 ====================
+        function generateQRCode() {
+            const input = document.getElementById('qr-input').value.trim();
+            const size = parseInt(document.getElementById('qr-size').value);
+            const foregroundColor = document.getElementById('qr-foreground').value;
+            const backgroundColor = document.getElementById('qr-background').value;
+            const resultDiv = document.getElementById('qr-result');
+            const errorDiv = document.getElementById('qr-error');
+            
+            if (!input) {
+                errorDiv.textContent = '请输入要生成QR码的内容！';
+                errorDiv.classList.add('show');
+                return;
+            }
+            
+            try {
+                errorDiv.classList.remove('show');
+                
+                // Generate QR code
+                const dataUrl = window.qrGenerator.generate(input, {
+                    size: size,
+                    margin: 4,
+                    backgroundColor: backgroundColor,
+                    foregroundColor: foregroundColor
+                });
+                
+                // Display result
+                resultDiv.innerHTML = `<img src="${dataUrl}" alt="QR Code" style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 4px;">`;
+                
+                // Store data URL for download
+                resultDiv.dataset.qrDataUrl = dataUrl;
+                
+            } catch (e) {
+                errorDiv.textContent = '生成QR码失败: ' + e.message;
+                errorDiv.classList.add('show');
+            }
+        }
+        
+        function clearQRCode() {
+            document.getElementById('qr-input').value = '';
+            document.getElementById('qr-result').innerHTML = '<div style="color: #999;">点击“生成QR码”开始</div>';
+            document.getElementById('qr-result').dataset.qrDataUrl = '';
+            document.getElementById('qr-error').classList.remove('show');
+        }
+        
+        function downloadQRCode() {
+            const resultDiv = document.getElementById('qr-result');
+            const dataUrl = resultDiv.dataset.qrDataUrl;
+            
+            if (!dataUrl) {
+                alert('请先生成QR码！');
+                return;
+            }
+            
+            const input = document.getElementById('qr-input').value.trim();
+            let filename = 'qrcode.png';
+            
+            // Try to create a meaningful filename
+            if (input) {
+                // Use first 20 characters of input for filename
+                let namePart = input.substring(0, 20).replace(/[^a-zA-Z0-9]/g, '_');
+                if (namePart) {
+                    filename = `qrcode_${namePart}.png`;
+                }
+            }
+            
+            window.qrGenerator.downloadQRCode(dataUrl, filename);
+        }
+        
         // ==================== UUID 生成器 ====================
         function generateUUIDv4() {
             if (crypto.randomUUID) {
@@ -2327,6 +2470,12 @@ Apple`;
             document.getElementById('uuid-suffix').value = '';
             document.querySelector('input[name="uuid-version"][value="v4"]').checked = true;
         }
+    
+        function convertJsonToCsv(){const input=document.getElementById('json-csv-input').value.trim(),delimiter=document.getElementById('json-csv-delimiter').value,addBom=document.getElementById('json-csv-bom').checked,output=document.getElementById('json-csv-output'),stats=document.getElementById('json-csv-stats');if(!input){output.value='请输入 JSON 数组';stats.textContent='';return}try{const data=JSON.parse(input);if(!Array.isArray(data)){output.value='错误：请输入 JSON 数组';return}if(data.length===0){output.value='错误：数组为空';return}const allKeys=new Set();data.forEach(obj=>{if(typeof obj==='object'&&obj!==null){Object.keys(obj).forEach(key=>allKeys.add(key))}});const keys=Array.from(allKeys);let csv=addBom?'\uFEFF':'';csv+=keys.map(k=>escapeCsv(k,delimiter)).join(delimiter)+'\n';let rowCount=0;data.forEach(obj=>{if(typeof obj==='object'&&obj!==null){const row=keys.map(key=>escapeCsv(obj[key]!==null?obj[key]:' ',delimiter));csv+=row.join(delimiter)+'\n';rowCount++}});output.value=csv;stats.textContent='共 '+rowCount+' 行数据，'+keys.length+' 个字段'}catch(e){output.value='JSON 解析错误：'+e.message}}
+        function escapeCsv(value,delimiter){if(typeof value!=='string')value=String(value);if(value.includes(delimiter)||value.includes('"')||value.includes('\n')){value='"'+value.replace(/"/g,'""')+'"'}return value}
+        function copyCsvResult(){const output=document.getElementById('json-csv-output');if(output.value)navigator.clipboard.writeText(output.value).then(()=>alert('已复制！'))}
+        function downloadCsv(){const output=document.getElementById('json-csv-output');if(output.value){const blob=new Blob([output.value],{type:'text/csv;charset=utf-8;'});const link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download='export.csv';link.click()}}
+
     </script>
 </body>
 </html>
