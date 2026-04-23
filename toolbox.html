@@ -282,6 +282,7 @@
             <button class="tab-btn" data-tab="regex">正则测试</button>
             <button class="tab-btn" data-tab="color">颜色转换</button>
             <button class="tab-btn" data-tab="text-splitter">文本分隔</button>
+            <button class="tab-btn" data-tab="text-statistics">文本统计</button>
             <button class="tab-btn" data-tab="qr-code">QR码生成</button>
         </div>
 
@@ -764,6 +765,28 @@
                 <textarea id="text-splitter-output" readonly placeholder="处理结果将显示在这里..." style="min-height: 150px;"></textarea>
             </div>
             <button class="btn btn-secondary copy-btn" onclick="copyResult('text-splitter-output', this)">复制结果</button>
+        </div>
+
+        <!-- 文本统计工具 -->
+        <div class="tool-panel" id="text-statistics-panel">
+            <h2 class="tool-title">文本统计工具</h2>
+            <div class="form-group">
+                <label>输入文本</label>
+                <textarea id="text-stat-input" placeholder="请输入要统计的文本..." style="min-height: 200px;"></textarea>
+            </div>
+            <div class="form-group">
+                <label>统计选项</label>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" id="text-stat-chinese" checked> 统计中文字符</label>
+                    <label><input type="checkbox" id="text-stat-english"> 统计英文字母</label>
+                    <label><input type="checkbox" id="text-stat-numbers"> 统计数字</label>
+                    <label><input type="checkbox" id="text-stat-spaces"> 统计空白字符</label>
+                    <label><input type="checkbox" id="text-stat-punctuation"> 统计标点符号</label>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="analyzeTextStatistics">统计分析</button>
+            <button class="btn btn-secondary" onclick="clearTextStatistics">清空</button>
+            <div id="text-statistics-result" class="result-box" style="min-height: 300px;"></div>
         </div>
 
         <!-- QR码生成器 -->
@@ -2475,6 +2498,191 @@ Apple`;
         function escapeCsv(value,delimiter){if(typeof value!=='string')value=String(value);if(value.includes(delimiter)||value.includes('"')||value.includes('\n')){value='"'+value.replace(/"/g,'""')+'"'}return value}
         function copyCsvResult(){const output=document.getElementById('json-csv-output');if(output.value)navigator.clipboard.writeText(output.value).then(()=>alert('已复制！'))}
         function downloadCsv(){const output=document.getElementById('json-csv-output');if(output.value){const blob=new Blob([output.value],{type:'text/csv;charset=utf-8;'});const link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download='export.csv';link.click()}}
+
+        // ==================== 文本统计工具 ====================
+        function analyzeTextStatistics() {
+            const input = document.getElementById('text-stat-input').value;
+            const statsResult = document.getElementById('text-statistics-result');
+            
+            if (!input) {
+                statsResult.innerHTML = '<span style="color: #999;">请输入要统计的文本</span>';
+                return;
+            }
+            
+            const includeChinese = document.getElementById('text-stat-chinese').checked;
+            const includeEnglish = document.getElementById('text-stat-english').checked;
+            const includeNumbers = document.getElementById('text-stat-numbers').checked;
+            const includeSpaces = document.getElementById('text-stat-spaces').checked;
+            const includePunctuation = document.getElementById('text-stat-punctuation').checked;
+            
+            // 统计各种字符数量
+            let totalChars = input.length;
+            let chineseCount = 0;
+            let englishCount = 0;
+            let numberCount = 0;
+            let spaceCount = 0;
+            let punctuationCount = 0;
+            let otherCount = 0;
+            
+            // 汉字正则：[\u4e00-\u9fa5]
+            // 英文字母：[a-zA-Z]
+            // 数字：[0-9]
+            // 空白字符：\s
+            // 标点符号：其他可见字符
+            
+            for (let i = 0; i < input.length; i++) {
+                const char = input[i];
+                
+                if (/^[\u4e00-\u9fa5]$/.test(char)) {
+                    chineseCount++;
+                } else if (/^[a-zA-Z]$/.test(char)) {
+                    englishCount++;
+                } else if (/^[0-9]$/.test(char)) {
+                    numberCount++;
+                } else if (/^\s$/.test(char)) {
+                    spaceCount++;
+                } else if (/^[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\u2000-\u206F\u3000-\u303F\uFF00-\uFFEF]$/.test(char)) {
+                    // 其他中文标点和符号
+                    punctuationCount++;
+                } else {
+                    otherCount++;
+                }
+            }
+            
+            // 如果未选择任何选项，默认全部显示
+            const stats = [];
+            
+            if (includeChinese) {
+                stats.push({ name: '中文字符', count: chineseCount, percent: ((chineseCount / totalChars) * 100).toFixed(2) });
+            }
+            if (includeEnglish) {
+                stats.push({ name: '英文字母', count: englishCount, percent: ((englishCount / totalChars) * 100).toFixed(2) });
+            }
+            if (includeNumbers) {
+                stats.push({ name: '数字', count: numberCount, percent: ((numberCount / totalChars) * 100).toFixed(2) });
+            }
+            if (includeSpaces) {
+                stats.push({ name: '空白字符', count: spaceCount, percent: ((spaceCount / totalChars) * 100).toFixed(2) });
+            }
+            if (includePunctuation) {
+                stats.push({ name: '标点符号', count: punctuationCount, percent: ((punctuationCount / totalChars) * 100).toFixed(2) });
+            }
+            
+            // 总字符统计
+            const otherStats = { name: '其他字符', count: otherCount, percent: ((otherCount / totalChars) * 100).toFixed(2) };
+            
+            // 统计单词数量
+            const words = input.trim().split(/\s+/).filter(w => w.length > 0);
+            const wordCount = words.length;
+            
+            // 统计句子数量（按句号、问号、感叹号分割）
+            const sentences = input.split(/[。！？!?]+/).filter(s => s.trim().length > 0);
+            const sentenceCount = sentences.length;
+            
+            // 统计行数
+            const lines = input.split('\n');
+            const lineCount = lines.length;
+            
+            // 统计最长单词
+            let longestWord = '';
+            if (wordCount > 0) {
+                longestWord = words.reduce((a, b) => a.length > b.length ? a : b, '');
+            }
+            
+            // 词频统计
+            const wordFrequency = {};
+            words.forEach(word => {
+                const lowerWord = word.toLowerCase();
+                wordFrequency[lowerWord] = (wordFrequency[lowerWord] || 0) + 1;
+            });
+            
+            // 获取出现频率最高的5个单词
+            const topWords = Object.entries(wordFrequency)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5)
+                .map(([word, count]) => `${word}: ${count}次`)
+                .join('<br>• ');
+            
+            // 汉字出现频率（如果包含中文）
+            let topChinese = '';
+            if (chineseCount > 0) {
+                const chineseChars = input.match(/[\u4e00-\u9fa5]/g) || [];
+                const chineseFrequency = {};
+                chineseChars.forEach(char => {
+                    chineseFrequency[char] = (chineseFrequency[char] || 0) + 1;
+                });
+                topChinese = Object.entries(chineseFrequency)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 10)
+                    .map(([char, count]) => `${char}: ${count}次`)
+                    .join('<br>• ');
+            }
+            
+            // 生成统计结果HTML
+            let html = '<div style="margin-bottom: 20px;">';
+            html += '<h3 style="color: #333; font-size: 1.2em; margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 10px;">整体统计</h3>';
+            html += '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">';
+            html += `<div style="background: #f0f7fd; padding: 15px; border-radius: 6px; text-align: center;"><strong style="color: #333; font-size: 24px;">${totalChars}</strong><br><span style="font-size: 13px; color: #666;">总字符数</span></div>`;
+            html += `<div style="background: #f0f7fd; padding: 15px; border-radius: 6px; text-align: center;"><strong style="color: #333; font-size: 24px;">${wordCount}</strong><br><span style="font-size: 13px; color: #666;">单词数</span></div>`;
+            html += `<div style="background: #f0f7fd; padding: 15px; border-radius: 6px; text-align: center;"><strong style="color: #333; font-size: 24px;">${sentenceCount}</strong><br><span style="font-size: 13px; color: #666;">句子数</span></div>`;
+            html += `<div style="background: #f0f7fd; padding: 15px; border-radius: 6px; text-align: center;"><strong style="color: #333; font-size: 24px;">${lineCount}</strong><br><span style="font-size: 13px; color: #666;">行数</span></div>`;
+            html += '</div>';
+            html += '</div>';
+            
+            html += '<div style="margin-bottom: 20px;">';
+            html += '<h3 style="color: #333; font-size: 1.2em; margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 10px;">字符类型统计</h3>';
+            html += '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px;">';
+            
+            stats.forEach(stat => {
+                html += `<div style="background: #fff; padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0; text-align: center;">`;
+                html += `<div style="font-size: 20px; color: #333; font-weight: 600;">${stat.count}</div>`;
+                html += `<div style="font-size: 12px; color: #666; margin-top: 5px;">${stat.name} <span style="color: #999;">(${stat.percent}%)</span></div>`;
+                html += `</div>`;
+            });
+            
+            if (otherCount > 0) {
+                html += `<div style="background: #fff; padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0; text-align: center;">`;
+                html += `<div style="font-size: 20px; color: #333; font-weight: 600;">${otherStats.count}</div>`;
+                html += `<div style="font-size: 12px; color: #666; margin-top: 5px;">${otherStats.name} <span style="color: #999;">(${otherStats.percent}%)</span></div>`;
+                html += `</div>`;
+            }
+            
+            html += '</div>';
+            html += '</div>';
+            
+            if (wordCount > 0) {
+                html += '<div style="margin-bottom: 20px;">';
+                html += '<h3 style="color: #333; font-size: 1.2em; margin-bottom: 10px; border-bottom: 1px solid #ddd; padding-bottom: 8px;">词频分析（Top 5）</h3>';
+                html += '<div style="background: #fafafa; padding: 15px; border-radius: 6px; border: 1px solid #e0e0e0;"><ul style="margin: 0; padding-left: 20px;"><li>' + topWords + '</ul></div>';
+                html += '</div>';
+            }
+            
+            if (chineseCount > 0) {
+                html += '<div style="margin-bottom: 20px;">';
+                html += '<h3 style="color: #333; font-size: 1.2em; margin-bottom: 10px; border-bottom: 1px solid #ddd; padding-bottom: 8px;">汉字出现频率（Top 10）</h3>';
+                html += '<div style="background: #fafafa; padding: 15px; border-radius: 6px; border: 1px solid #e0e0e0;"><ul style="margin: 0; padding-left: 20px;"><li>' + topChinese + '</ul></div>';
+                html += '</div>';
+            }
+            
+            if (longestWord) {
+                html += '<div style="margin-bottom: 20px;">';
+                html += '<h3 style="color: #333; font-size: 1.2em; margin-bottom: 10px; border-bottom: 1px solid #ddd; padding-bottom: 8px;">最长单词</h3>';
+                html += `<div style="background: #e8f5e8; padding: 15px; border-radius: 6px; border: 1px solid #c8e6c9; font-family: monospace; font-size: 16px;">${escapeHtml(longestWord)}</div>`;
+                html += '</div>';
+            }
+            
+            statsResult.innerHTML = html;
+        }
+        
+        function clearTextStatistics() {
+            document.getElementById('text-stat-input').value = '';
+            document.getElementById('text-statistics-result').innerHTML = '';
+            document.getElementById('text-stat-chinese').checked = true;
+            document.getElementById('text-stat-english').checked = false;
+            document.getElementById('text-stat-numbers').checked = false;
+            document.getElementById('text-stat-spaces').checked = false;
+            document.getElementById('text-stat-punctuation').checked = false;
+        }
 
     </script>
 </body>
