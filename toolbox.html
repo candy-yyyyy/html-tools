@@ -528,6 +528,79 @@
             updateHistoryDisplay();
         });
 
+
+        // ==================== 进制转换器 ====================
+        function convertBase() {
+            const input = document.getElementById('base-input').value.trim();
+            const fromBase = document.getElementById('base-from').value;
+            const toBase = document.getElementById('base-to').value;
+            const resultDiv = document.getElementById('base-result');
+            
+            if (!input) {
+                resultDiv.innerHTML = '<span style="color: #999;">请输入要转换的数值</span>';
+                return;
+            }
+            
+            try {
+                let num;
+                if (fromBase === 'dec') {
+                    if (!/^\-?\d+$/.test(input)) {
+                        throw new Error('十进制数格式无效');
+                    }
+                    num = parseInt(input, 10);
+                    if (!isFinite(num)) {
+                        throw new Error('数值超出范围');
+                    }
+                } else if (fromBase === 'hex') {
+                    let cleanInput = input.toLowerCase().replace(/^0x/, '');
+                    if (!/^[0-9a-f]+$/.test(cleanInput)) {
+                        throw new Error('十六进制数格式无效');
+                    }
+                    num = parseInt(cleanInput, 16);
+                } else if (fromBase === 'bin') {
+                    let cleanInput = input.toLowerCase().replace(/^0b/, '');
+                    if (!/^[01]+$/.test(cleanInput)) {
+                        throw new Error('二进制数格式无效');
+                    }
+                    num = parseInt(cleanInput, 2);
+                } else if (fromBase === 'oct') {
+                    let cleanInput = input.toLowerCase().replace(/^0o/, '');
+                    if (!/^[0-7]+$/.test(cleanInput)) {
+                        throw new Error('八进制数格式无效');
+                    }
+                    num = parseInt(cleanInput, 8);
+                }
+                
+                let result;
+                if (toBase === 'dec') {
+                    result = num.toString();
+                } else if (toBase === 'hex') {
+                    result = '0x' + num.toString(16).toUpperCase();
+                } else if (toBase === 'bin') {
+                    result = '0b' + num.toString(2);
+                } else if (toBase === 'oct') {
+                    result = '0o' + num.toString(8);
+                }
+                
+                resultDiv.innerHTML = '<div style="font-family: monospace; font-size: 16px; color: #333;">' + result + '</div>';
+                navigator.clipboard.writeText(result).catch(() => {});
+                
+            } catch (e) {
+                resultDiv.innerHTML = '<span style="color: #dc2626;">转换错误: ' + e.message + '</span>';
+            }
+        }
+        
+        function clearBaseConverter() {
+            document.getElementById('base-input').value = '';
+            document.getElementById('base-result').innerHTML = '<span style="color: #999;">输入数值后自动转换或点击转换按钮</span>';
+            document.getElementById('base-from').value = 'dec';
+            document.getElementById('base-to').value = 'hex';
+        }
+
+        document.getElementById('base-input').addEventListener('input', convertBase);
+        document.getElementById('base-from').addEventListener('change', convertBase);
+        document.getElementById('base-to').addEventListener('change', convertBase);
+
 </script>
     <style>
         * {
@@ -810,7 +883,7 @@
             <button class="tab-btn" data-tab="qr-code">QR码生�?/button>
             <button class="tab-btn" data-tab="sha">SHA 鍝堝笇</button>
             <button class="tab-btn" data-tab="clipboard">剪贴板历史</button>
-            <button class="tab-btn" data-tab="clipboard">剪贴板历史</button>
+            <button class="tab-btn" data-tab="base-converter">进制转换</button>
         </div>
 
         <!-- 密码生成�?-->
@@ -1462,6 +1535,43 @@
             </div>
             <div id="sha-error" class="alert alert-error"></div>
             <p class="helper-text" style="margin-top: 15px;">馃挕 鎻愮ず锛歋HA-256 鍜?SHA-512 鏄帹鑽愮殑瀹夊叏绠楁硶锛孲HA-1 宸蹭笉鎺ㄨ崘鐢ㄤ簬瀹夊叏鍦烘櫙銆?/p>
+        </div>
+
+        <!-- 进制转换器 -->
+        <div class="tool-panel" id="base-converter-panel">
+            <h2 class="tool-title">进制转换器</h2>
+            <div class="form-group">
+                <label>输入数值</label>
+                <input type="text" id="base-input" placeholder="例如: 255, FF, 377, 11111111" style="width: 100%; font-family: monospace;">
+                <p class="helper-text">支持十进制、十六进制(0x或0X结尾)、二进制(0b或0B开头)、八进制(0o或0O开头)格式</p>
+            </div>
+            <div class="form-group">
+                <label>从</label>
+                <select id="base-from" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                    <option value="dec">十进制 (Decimal)</option>
+                    <option value="hex">十六进制 (Hexadecimal)</option>
+                    <option value="bin">二进制 (Binary)</option>
+                    <option value="oct">八进制 (Octal)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>转换为</label>
+                <select id="base-to" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                    <option value="hex" selected>十六进制 (Hexadecimal)</option>
+                    <option value="dec">十进制 (Decimal)</option>
+                    <option value="bin">二进制 (Binary)</option>
+                    <option value="oct">八进制 (Octal)</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" onclick="convertBase()">转换</button>
+            <button class="btn btn-secondary" onclick="clearBaseConverter()">清空</button>
+            <div class="form-group" style="margin-top: 20px;">
+                <label>转换结果</label>
+                <div id="base-result" class="result-box" style="min-height: 80px;">
+                    <span style="color: #999;">输入数值后自动转换或点击转换按钮</span>
+                </div>
+            </div>
+            <p class="helper-text" style="margin-top: 15px;">💡 提示：支持整数转换</p>
         </div>
 
     <script>
