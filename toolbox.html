@@ -884,6 +884,7 @@
             <button class="tab-btn" data-tab="sha">SHA 鍝堝笇</button>
             <button class="tab-btn" data-tab="clipboard">剪贴板历史</button>
             <button class="tab-btn" data-tab="base-converter">进制转换</button>
+            <button class="tab-btn" data-tab="yaml">YAML格式化</button>
         </div>
 
         <!-- 密码生成�?-->
@@ -1574,6 +1575,42 @@
             <p class="helper-text" style="margin-top: 15px;">💡 提示：支持整数转换</p>
         </div>
 
+        <!-- YAML格式化工具 -->
+        <div class="tool-panel" id="yaml-panel">
+            <h2 class="tool-title">YAML格式化工具</h2>
+            <div class="alert alert-warning">
+                <p>💡 提示：本工具纯前端实现，使用简单正则解析，适合格式化标准YAML。对于复杂的YAML结构，建议使用专业工具。</p>
+            </div>
+            <div class="form-group">
+                <label>输入YAML</label>
+                <textarea id="yaml-input" placeholder="请输入YAML格式的数据，例如:\nuser:\n  name: John\n  age: 30\n  hobbies:\n    - reading\n    - coding" style="min-height: 200px;"></textarea>
+            </div>
+            <div class="form-group">
+                <label>缩进空格数</label>
+                <select id="yaml-indent">
+                    <option value="2">2个空格</option>
+                    <option value="4" selected>4个空格</option>
+                    <option value="tab">Tab缩进</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>输出选项</label>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" id="yaml-sort-keys" checked> 按字母顺序排序Key</label>
+                    <label><input type="checkbox" id="yaml-remove-empty" checked> 移除空值</label>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="formatYAML()">格式化YAML</button>
+            <button class="btn btn-secondary" onclick="compressYAML()">压缩</button>
+            <button class="btn btn-secondary" onclick="validateYAML()">验证</button>
+            <button class="btn btn-secondary copy-btn" onclick="copyResult('yaml-output', this)">复制结果</button>
+            <div class="form-group" style="margin-top: 20px;">
+                <label>输出结果</label>
+                <textarea id="yaml-output" readonly placeholder="格式化结果将显示在这里..." style="min-height: 200px;"></textarea>
+            </div>
+            <div id="yaml-error" class="alert alert-error"></div>
+        </div>
+
     <script>
         // ==================== 标签页切�?=====================
         document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -1918,6 +1955,158 @@
             }
             
             document.getElementById('md5-output').value = hash;
+        }
+
+        // ==================== YAML格式化工厂 ====================
+        function formatYAML() {
+            const input = document.getElementById('yaml-input').value;
+            const indent = document.getElementById('yaml-indent').value === 'tab' ? '\t' : parseInt(document.getElementById('yaml-indent').value);
+            const sortKeys = document.getElementById('yaml-sort-keys').checked;
+            const removeEmpty = document.getElementById('yaml-remove-empty').checked;
+            const errorDiv = document.getElementById('yaml-error');
+            
+            try {
+                const formatted = formatYAMLText(input, indent, sortKeys, removeEmpty);
+                document.getElementById('yaml-output').value = formatted;
+                errorDiv.classList.remove('show');
+            } catch (e) {
+                errorDiv.textContent = 'YAML格式化错误: ' + e.message;
+                errorDiv.classList.add('show');
+            }
+        }
+
+        function compressYAML() {
+            const input = document.getElementById('yaml-input').value;
+            const errorDiv = document.getElementById('yaml-error');
+            
+            try {
+                const compressed = compressYAMLText(input);
+                document.getElementById('yaml-output').value = compressed;
+                errorDiv.classList.remove('show');
+            } catch (e) {
+                errorDiv.textContent = 'YAML压缩错误: ' + e.message;
+                errorDiv.classList.add('show');
+            }
+        }
+
+        function validateYAML() {
+            const input = document.getElementById('yaml-input').value;
+            const errorDiv = document.getElementById('yaml-error');
+            
+            try {
+                const lines = input.split('\n');
+                let indentLevel = 0;
+                let foundError = false;
+                let errorMsg = '';
+                
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i];
+                    const trimmed = line.trim();
+                    
+                    if (trimmed === '' || trimmed.startsWith('#')) {
+                        continue;
+                    }
+                    
+                    // 检查冒号前面是不是有效的key
+                    if (trimmed.includes(':')) {
+                        const key = trimmed.split(':')[0].trim();
+                        if (key === '' || key.includes(' ')) {
+                            foundError = true;
+                            errorMsg = '第 ' + (i + 1) + ' 行：Key格式错误';
+                            break;
+                        }
+                    } else if (!trimmed.startsWith('-')) {
+                        foundError = true;
+                        errorMsg = '第 ' + (i + 1) + ' 行：格式错误（非列表项）';
+                        break;
+                    }
+                }
+                
+                if (foundError) {
+                    errorDiv.textContent = 'YAML格式错误: ' + errorMsg;
+                    errorDiv.className = 'alert alert-error show';
+                    errorDiv.style.background = '';
+                    errorDiv.style.color = '';
+                    errorDiv.style.borderColor = '';
+                } else {
+                    errorDiv.textContent = 'YAML格式正确';
+                    errorDiv.className = 'alert alert-warning show';
+                    errorDiv.style.background = '#d4edda';
+                    errorDiv.style.color = '#155724';
+                    errorDiv.style.borderColor = '#c3e6cb';
+                }
+            } catch (e) {
+                errorDiv.textContent = '验证错误: ' + e.message;
+                errorDiv.className = 'alert alert-error show';
+                errorDiv.style.background = '';
+                errorDiv.style.color = '';
+                errorDiv.style.borderColor = '';
+            }
+        }
+
+        function formatYAMLText(input, indent, sortKeys, removeEmpty) {
+            const lines = input.split('\n');
+            const result = [];
+            let currentIndent = 0;
+            let indentStr = indent === '\t' ? '\t' : ' '.repeat(indent);
+            
+            for (let line of lines) {
+                line = line.trim();
+                
+                // 跳过空行和注释
+                if (line === '' || line.startsWith('#')) {
+                    continue;
+                }
+                
+                // 处理列表项
+                if (line.startsWith('- ')) {
+                    const item = line.substring(2).trim();
+                    result.push(indentStr.repeat(currentIndent) + '- ' + item);
+                }
+                // 处理键值对
+                else if (line.includes(':')) {
+                    const colonPos = line.indexOf(':');
+                    let key = line.substring(0, colonPos).trim();
+                    let value = line.substring(colonPos + 1).trim();
+                    
+                    // 移除空值
+                    if (removeEmpty && (value === '' || value === '{}' || value === '[]')) {
+                        continue;
+                    }
+                    
+                    // 如果有值，直接输出
+                    if (value !== '') {
+                        result.push(indentStr.repeat(currentIndent) + key + ': ' + value);
+                    } else {
+                        result.push(indentStr.repeat(currentIndent) + key + ':');
+                    }
+                    
+                    // 如果值是嵌套对象或列表，增加缩进
+                    if (value.endsWith(':') || value.endsWith('[') || value.endsWith('{')) {
+                        currentIndent++;
+                    }
+                }
+            }
+            
+            return result.join('\n');
+        }
+
+        function compressYAMLText(input) {
+            const lines = input.split('\n');
+            const result = [];
+            
+            for (let line of lines) {
+                line = line.trim();
+                
+                // 跳过空行和注释
+                if (line === '' || line.startsWith('#')) {
+                    continue;
+                }
+                
+                result.push(line);
+            }
+            
+            return result.join(' ');
         }
 
         // MD5算法纯JS实现
