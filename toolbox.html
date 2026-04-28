@@ -601,7 +601,98 @@
         document.getElementById('base-from').addEventListener('change', convertBase);
         document.getElementById('base-to').addEventListener('change', convertBase);
 
-</script>
+        // ==================== 大小写转换工具 ====================
+        function convertCase() {
+            const input = document.getElementById('case-input').value;
+            const mode = document.querySelector('input[name="case-mode"]:checked').value;
+            const output = document.getElementById('case-output');
+            
+            if (!input) {
+                output.value = '';
+                return;
+            }
+            
+            try {
+                let words = splitWords(input);
+                let result;
+                
+                switch (mode) {
+                    case 'camel':
+                        result = toCamelCase(words);
+                        break;
+                    case 'pascal':
+                        result = toPascalCase(words);
+                        break;
+                    case 'snake':
+                        result = toSnakeCase(words);
+                        break;
+                    case 'kebab':
+                        result = toKebabCase(words);
+                        break;
+                    case 'cobol':
+                        result = toSNAKECase(words);
+                        break;
+                    case 'flat':
+                        result = toLowercase(words);
+                        break;
+                }
+                
+                output.value = result;
+            } catch (e) {
+                output.value = '转换错误: ' + e.message;
+            }
+        }
+        
+        function splitWords(text) {
+            // First, try to identify the case format and split accordingly
+            // Handle camelCase, PascalCase, snake_case, kebab-case, SNAKE_CASE
+            let temp = text
+                // Split camelCase and PascalCase
+                .replace(/([a-z])([A-Z])/g, '$1 $2')
+                // Split SNAKE_CASE and SNAKE-CASE
+                .replace(/[_-]/g, ' ')
+                // Split numbers from letters
+                .replace(/([a-zA-Z])(\d)/g, '$1 $2')
+                .replace(/(\d)([a-zA-Z])/g, '$1 $2');
+            
+            return temp.split(/\s+/).filter(w => w.length > 0);
+        }
+        
+        function toCamelCase(words) {
+            if (words.length === 0) return '';
+            let first = words[0].toLowerCase();
+            let rest = words.slice(1).map(w => toPascalCase([w]));
+            return first + rest.join('');
+        }
+        
+        function toPascalCase(words) {
+            return words.map(w => {
+                if (!w) return '';
+                return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+            }).join('');
+        }
+        
+        function toSnakeCase(words) {
+            return words.map(w => w.toLowerCase()).join('_');
+        }
+        
+        function toKebabCase(words) {
+            return words.map(w => w.toLowerCase()).join('-');
+        }
+        
+        function toSNAKECase(words) {
+            return words.map(w => w.toUpperCase()).join('_');
+        }
+        
+        function toLowercase(words) {
+            return words.join(' ').toLowerCase();
+        }
+        
+        function clearCaseConverter() {
+            document.getElementById('case-input').value = '';
+            document.getElementById('case-output').value = '';
+            document.querySelector('input[name="case-mode"][value="camel"]').checked = true;
+        }
     <style>
         * {
             margin: 0;
@@ -885,6 +976,7 @@
             <button class="tab-btn" data-tab="clipboard">剪贴板历史</button>
             <button class="tab-btn" data-tab="base-converter">进制转换</button>
             <button class="tab-btn" data-tab="yaml">YAML格式化</button>
+            <button class="tab-btn" data-tab="case-converter">大小写转换</button>
         </div>
 
         <!-- 密码生成�?-->
@@ -1609,6 +1701,34 @@
                 <textarea id="yaml-output" readonly placeholder="格式化结果将显示在这里..." style="min-height: 200px;"></textarea>
             </div>
             <div id="yaml-error" class="alert alert-error"></div>
+        </div>
+
+        <!-- 大小写转换工具 -->
+        <div class="tool-panel" id="case-converter-panel">
+            <h2 class="tool-title">大小写转换工具</h2>
+            <div class="form-group">
+                <label>输入文本</label>
+                <textarea id="case-input" placeholder="请输入要转换的文本..." style="min-height: 120px;"></textarea>
+            </div>
+            <div class="form-group">
+                <label>转换模式</label>
+                <div class="checkbox-group">
+                    <label><input type="radio" name="case-mode" value="camel" checked> 小驼峰 (camelCase)</label>
+                    <label><input type="radio" name="case-mode" value="pascal"> 大驼峰 (PascalCase)</label>
+                    <label><input type="radio" name="case-mode" value="snake"> 蛇形 (snake_case)</label>
+                    <label><input type="radio" name="case-mode" value="kebab"> 短横线 (kebab-case)</label>
+                    <label><input type="radio" name="case-mode" value="cobol"> 全大写 (SNAKE_CASE)</label>
+                    <label><input type="radio" name="case-mode" value="flat"> 平铺小写 (lowercase)</label>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="convertCase()">转换</button>
+            <button class="btn btn-secondary" onclick="clearCaseConverter()">清空</button>
+            <button class="btn btn-secondary copy-btn" onclick="copyResult('case-output', this)">复制结果</button>
+            <div class="form-group" style="margin-top: 20px;">
+                <label>转换结果</label>
+                <textarea id="case-output" readonly placeholder="转换结果将显示在这里..." style="min-height: 120px;"></textarea>
+            </div>
+            <p class="helper-text" style="margin-top: 15px;">💡 提示：工具会自动识别分隔符（空格、下划线、短横线、驼峰等），支持中英文混合。</p>
         </div>
 
     <script>
