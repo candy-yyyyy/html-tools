@@ -630,6 +630,7 @@
         <button class="tab-btn" data-tab="splitter">文本分隔</button>
         <button class="tab-btn" data-tab="statistics">文本统计</button>
         <button class="tab-btn" data-tab="clipboard">剪贴板历史</button>
+        <button class="tab-btn" data-tab="sync">数据同步</button>
       </nav>
 
       <section>
@@ -1082,6 +1083,31 @@
           <div id="clipboard-msg" class="alert"></div>
           <div id="clipboard-history" class="history-list"></div>
         </div>
+
+        <div class="tool-panel has-row" id="sync-panel">
+          <h2 class="tool-title">数据同步</h2>
+          <div class="panel-row">
+            <div class="panel-left">
+              <div class="form-group"><label>平台</label><select id="sync-platform"><option value="github">GitHub</option></select></div>
+              <div class="grid-2">
+                <div class="form-group"><label>仓库（owner/repo）</label><input id="sync-repo" type="text" placeholder="tangguo95/html-tools"></div>
+                <div class="form-group"><label>分支</label><input id="sync-branch" type="text" value="main" placeholder="main"></div>
+              </div>
+              <div class="form-group"><label>同步文件路径</label><input id="sync-path" type="text" value="toolbox-state.json"></div>
+              <div class="form-group"><label>访问令牌 Token</label><input id="sync-token" type="password" placeholder="GitHub Personal Access Token"></div>
+              <div class="form-group"><label>同步密码（可选，加密上传）</label><input id="sync-password" type="password" placeholder="留空则明文上传"></div>
+              <p class="helper-text">Token 仅保存在本地浏览器，直接请求 GitHub API。剪贴板历史、JSON 报文记录等敏感数据建议设置同步密码加密后上传，仓库中只保存密文。</p>
+            </div>
+            <div class="panel-right">
+              <div class="actions">
+                <button class="btn btn-primary" id="sync-upload-btn" onclick="syncUpload()">上传同步</button>
+                <button class="btn" id="sync-download-btn" onclick="syncDownload()">下载同步</button>
+                <button class="btn" id="sync-test-btn" onclick="syncTest()">测试连接</button>
+              </div>
+              <div id="sync-status" class="result-box flex-1"></div>
+            </div>
+          </div>
+        </div>
       </section>
     </main>
   </div>
@@ -1091,6 +1117,8 @@
     const APP_STATE_KEY = 'html_tools_app_state';
     const HISTORY_KEY = 'html_tools_clipboard_history';
     const JSON_NOTE_KEY = 'html_tools_json_note_records';
+    const SYNC_CONFIG_KEY = 'html_tools_sync_config';
+    const DEVICE_ID_KEY = 'html_tools_device_id';
     const IMAGE_BASE64_EMPTY = '<p class="helper-text">图片结果会显示在这里。</p>';
     const JSON_COMPARE_MAX_DIFFS = 300;
     const JSON_COMPARE_MISSING = Symbol('json-compare-missing');
@@ -1117,6 +1145,7 @@
         if (el.type === 'file' || el.type === 'hidden') return false;
         if (el.closest('#jsoncompare-panel') || el.closest('#jsonnote-panel')) return false;
         if (el.closest('#jsonnote-zoom')) return false;
+        if (el.closest('#sync-panel')) return false;
         return true;
       });
     }
@@ -3118,6 +3147,217 @@
       stats.textContent = `${srcLines} 行 → ${res.linesOut} 行${warn}`;
     }
 
+    // ===== 数据同步（GitHub）=====
+    function getDeviceId() {
+      let id = localStorage.getItem(DEVICE_ID_KEY);
+      if (!id) {
+        id = 'device-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+        localStorage.setItem(DEVICE_ID_KEY, id);
+      }
+      return id;
+    }
+
+    function readSyncConfig() {
+      try { return JSON.parse(localStorage.getItem(SYNC_CONFIG_KEY) || '{}') || {}; }
+      catch (_) { return {}; }
+    }
+
+    function saveSyncConfig(cfg) {
+      localStorage.setItem(SYNC_CONFIG_KEY, JSON.stringify(cfg));
+    }
+
+    function loadSyncConfigToForm() {
+      const cfg = readSyncConfig();
+      $('sync-repo').value = cfg.repo || '';
+      $('sync-branch').value = cfg.branch || 'main';
+      $('sync-path').value = cfg.path || 'toolbox-state.json';
+      $('sync-token').value = cfg.token || '';
+      $('sync-password').value = cfg.syncPassword || '';
+      setSyncStatus(cfg.lastSyncAt
+        ? '上次同步：' + new Date(cfg.lastSyncAt).toLocaleString()
+          + (cfg.lastSyncDevice ? '（来源设备 ' + cfg.lastSyncDevice + '）' : '')
+          + (cfg.syncPassword ? '\n已启用同步密码加密。' : '\n未加密（敏感数据建议设置同步密码）。')
+        : '尚未同步过。配置仓库与 Token 后点击「上传同步」或「下载同步」。');
+    }
+
+    function collectSyncConfig() {
+      const repo = $('sync-repo').value.trim();
+      const match = repo.match(/^([^/\s]+)\/([^/\s]+)$/);
+      if (!match) throw new Error('仓库格式应为 owner/repo，例如 tangguo95/html-tools');
+      const token = $('sync-token').value.trim();
+      if (!token) throw new Error('请输入 GitHub 访问令牌 Token');
+      return {
+        owner: match[1],
+        repo: match[2],
+        branch: $('sync-branch').value.trim() || 'main',
+        path: $('sync-path').value.trim() || 'toolbox-state.json',
+        token,
+        syncPassword: $('sync-password').value || ''
+      };
+    }
+
+    function setSyncBusy(busy) {
+      ['sync-upload-btn', 'sync-download-btn', 'sync-test-btn'].forEach(id => { $(id).disabled = busy; });
+    }
+
+    function setSyncStatus(message, type = 'ok') {
+      const el = $('sync-status');
+      el.textContent = message;
+      el.style.color = type === 'error' ? 'var(--danger)' : type === 'warn' ? 'var(--accent-2)' : '';
+    }
+
+    function collectAllData() {
+      const payload = {};
+      [APP_STATE_KEY, JSON_NOTE_KEY, HISTORY_KEY].forEach(key => {
+        const raw = localStorage.getItem(key);
+        if (raw != null) { try { payload[key] = JSON.parse(raw); } catch (_) { payload[key] = raw; } }
+      });
+      return {
+        app: 'html-tools',
+        version: 1,
+        updatedAt: new Date().toISOString(),
+        deviceId: getDeviceId(),
+        encrypted: false,
+        data: payload
+      };
+    }
+
+    async function encryptSyncPayload(payload, password) {
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const key = await aesKey(password, salt, 'GCM');
+      const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(JSON.stringify(payload.data)));
+      return {
+        app: 'html-tools',
+        version: 1,
+        updatedAt: payload.updatedAt,
+        deviceId: payload.deviceId,
+        encrypted: true,
+        salt: bytesToBase64(salt),
+        iv: bytesToBase64(iv),
+        data: bytesToBase64(new Uint8Array(encrypted))
+      };
+    }
+
+    async function decryptSyncPayload(payload, password) {
+      const key = await aesKey(password, base64ToBytes(payload.salt), 'GCM');
+      const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: base64ToBytes(payload.iv) }, key, base64ToBytes(payload.data));
+      return JSON.parse(new TextDecoder().decode(decrypted));
+    }
+
+    function applyAllData(data) {
+      Object.keys(data).forEach(key => {
+        const value = data[key];
+        localStorage.setItem(key, typeof value === 'string' ? value : JSON.stringify(value));
+      });
+    }
+
+    async function githubRequest(cfg, method, apiPath) {
+      const headers = {
+        'Accept': 'application/vnd.github+json',
+        'Authorization': 'Bearer ' + cfg.token,
+        'X-GitHub-Api-Version': '2022-11-28'
+      };
+      const opts = { method, headers };
+      if (method === 'PUT' || method === 'POST') {
+        headers['Content-Type'] = 'application/json';
+        opts.body = JSON.stringify(apiPath.body);
+      }
+      const res = await fetch('https://api.github.com' + apiPath.url, opts);
+      if (!res.ok) {
+        let msg = 'HTTP ' + res.status;
+        try { const err = await res.json(); if (err.message) msg = err.message; } catch (_) {}
+        throw new Error(msg);
+      }
+      return res.status === 204 ? null : res.json();
+    }
+
+    function githubContentsUrl(cfg, withRef) {
+      const path = cfg.path.split('/').map(encodeURIComponent).join('/');
+      return '/repos/' + encodeURIComponent(cfg.owner) + '/' + encodeURIComponent(cfg.repo) + '/contents/' + path + (withRef ? '?ref=' + encodeURIComponent(cfg.branch) : '');
+    }
+
+    async function githubReadFile(cfg) {
+      try { return await githubRequest(cfg, 'GET', { url: githubContentsUrl(cfg, true) }); }
+      catch (e) { if (String(e.message).includes('404')) return null; throw e; }
+    }
+
+    async function githubWriteFile(cfg, contentBase64, sha) {
+      const body = {
+        message: 'chore: sync html-tools toolbox state',
+        content: contentBase64,
+        branch: cfg.branch
+      };
+      if (sha) body.sha = sha;
+      return githubRequest(cfg, 'PUT', { url: githubContentsUrl(cfg, false), body });
+    }
+
+    async function syncTest() {
+      const cfg = collectSyncConfig();
+      setSyncBusy(true);
+      setSyncStatus('正在测试连接…');
+      try {
+        const user = await githubRequest(cfg, 'GET', { url: '/user' });
+        const repoInfo = await githubRequest(cfg, 'GET', { url: '/repos/' + encodeURIComponent(cfg.owner) + '/' + encodeURIComponent(cfg.repo) });
+        let branchNote = '';
+        try {
+          await githubRequest(cfg, 'GET', { url: '/repos/' + encodeURIComponent(cfg.owner) + '/' + encodeURIComponent(cfg.repo) + '/branches/' + encodeURIComponent(cfg.branch) });
+          branchNote = '分支「' + cfg.branch + '」存在';
+        } catch (_) {
+          branchNote = '警告：分支「' + cfg.branch + '」不存在，默认分支为 ' + repoInfo.default_branch;
+        }
+        saveSyncConfig(cfg);
+        setSyncStatus('连接成功 ✓\n用户：' + user.login + '\n仓库：' + repoInfo.full_name + '\n' + branchNote);
+      } catch (e) { setSyncStatus('连接失败：' + e.message, 'error'); }
+      finally { setSyncBusy(false); }
+    }
+
+    async function syncUpload() {
+      const cfg = collectSyncConfig();
+      setSyncBusy(true);
+      setSyncStatus('正在打包并上传…');
+      try {
+        const payload = collectAllData();
+        const content = cfg.syncPassword ? await encryptSyncPayload(payload, cfg.syncPassword) : payload;
+        const base64 = bytesToBase64(new TextEncoder().encode(JSON.stringify(content, null, 2)));
+        const existing = await githubReadFile(cfg);
+        await githubWriteFile(cfg, base64, existing ? existing.sha : undefined);
+        saveSyncConfig(Object.assign(cfg, { lastSyncAt: payload.updatedAt, lastSyncDevice: payload.deviceId }));
+        setSyncStatus('上传成功 ✓\n共 ' + Object.keys(payload.data).length + ' 个数据项\n已写入 ' + cfg.owner + '/' + cfg.repo + ' 的 ' + cfg.path + '\n' + (cfg.syncPassword ? '已加密（AES-GCM）' : '未加密') + '\n同步时间：' + new Date(payload.updatedAt).toLocaleString());
+      } catch (e) { setSyncStatus('上传失败：' + e.message, 'error'); }
+      finally { setSyncBusy(false); }
+    }
+
+    async function syncDownload() {
+      const cfg = collectSyncConfig();
+      setSyncBusy(true);
+      setSyncStatus('正在从仓库下载…');
+      try {
+        const existing = await githubReadFile(cfg);
+        if (!existing) throw new Error('仓库中不存在 ' + cfg.path + '，请先在源设备执行「上传同步」');
+        const json = new TextDecoder().decode(base64ToBytes(existing.content));
+        const payload = JSON.parse(json);
+        if (payload.app !== 'html-tools') throw new Error('该文件不是本工具的同步数据');
+        let data = payload.data;
+        if (payload.encrypted) {
+          if (!cfg.syncPassword) throw new Error('远端数据已加密，请输入同步密码后重试');
+          data = await decryptSyncPayload(payload, cfg.syncPassword);
+        }
+        const savedCfg = readSyncConfig();
+        if (payload.updatedAt && savedCfg.lastSyncAt && new Date(payload.updatedAt).getTime() < new Date(savedCfg.lastSyncAt).getTime()) {
+          if (!confirm('远端数据（' + new Date(payload.updatedAt).toLocaleString() + '）比本地上次同步（' + new Date(savedCfg.lastSyncAt).toLocaleString() + '）更旧，确定用远端数据覆盖本地吗？')) {
+            setSyncStatus('已取消下载');
+            return;
+          }
+        }
+        applyAllData(data);
+        saveSyncConfig(Object.assign(cfg, { lastSyncAt: payload.updatedAt, lastSyncDevice: payload.deviceId }));
+        setSyncStatus('下载成功 ✓，即将刷新页面恢复数据…');
+        setTimeout(() => location.reload(), 800);
+      } catch (e) { setSyncStatus('下载失败：' + e.message, 'error'); }
+      finally { setSyncBusy(false); }
+    }
+
     function ipToInt(ip) {
       const parts = ip.split('.').map(Number);
       if (parts.length !== 4 || parts.some(n => !Number.isInteger(n) || n < 0 || n > 255)) throw new Error('IP 地址格式无效');
@@ -3271,6 +3511,7 @@
       $('sql-output').addEventListener('click', event => event.currentTarget.focus());
       ['base-input','base-from','base-to'].forEach(id => $(id).addEventListener(id === 'base-input' ? 'input' : 'change', convertBase));
       ['unit-value','unit-from','unit-to'].forEach(id => $(id).addEventListener('input', convertUnit));
+      loadSyncConfigToForm();
     });
   </script>
 </body>
