@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>工具箱</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2032%2032%27%3E%3Crect%20x%3D%2711%27%20y%3D%274%27%20width%3D%2710%27%20height%3D%274.5%27%20rx%3D%272.25%27%20fill%3D%27%23b45309%27%2F%3E%3Crect%20x%3D%274%27%20y%3D%278.5%27%20width%3D%2724%27%20height%3D%2718%27%20rx%3D%274%27%20fill%3D%27%230f766e%27%2F%3E%3Crect%20x%3D%2713.5%27%20y%3D%278.5%27%20width%3D%275%27%20height%3D%276%27%20rx%3D%271.5%27%20fill%3D%27%23f4f2ed%27%2F%3E%3Crect%20x%3D%274%27%20y%3D%2719%27%20width%3D%2724%27%20height%3D%271.5%27%20fill%3D%27%230b5d57%27%2F%3E%3C%2Fsvg%3E">
   <style>
     :root {
       --bg: #f4f2ed;
@@ -623,6 +624,7 @@
         <button class="tab-btn" data-tab="base">进制转换</button>
         <button class="tab-btn" data-tab="case">大小写转换</button>
         <button class="tab-btn" data-tab="yaml">YAML 格式化</button>
+        <button class="tab-btn" data-tab="nginx">Nginx 格式化</button>
         <button class="tab-btn" data-tab="ip">IP 计算器</button>
         <button class="tab-btn" data-tab="unit">单位转换</button>
         <button class="tab-btn" data-tab="splitter">文本分隔</button>
@@ -998,6 +1000,24 @@
               <textarea id="yaml-output" readonly></textarea>
               <div class="actions"><button class="btn btn-primary" onclick="formatYaml()">格式化</button><button class="btn" onclick="yamlToJson()">转JSON</button><button class="btn" onclick="copyText('yaml-output')">复制</button></div>
               <p class="helper-text">内置轻量解析器支持常见 key: value、缩进对象和列表。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="tool-panel has-row" id="nginx-panel">
+          <h2 class="tool-title">Nginx 格式化</h2>
+          <div class="panel-row">
+            <div class="panel-left">
+              <textarea id="nginx-input" placeholder="粘贴 nginx 配置文件，支持注释、正则、多级块"></textarea>
+              <div class="checks">
+                <label><input id="nginx-indent-2" type="checkbox"> 2 空格缩进</label>
+                <label><input id="nginx-no-blank" type="checkbox"> 移除空行</label>
+              </div>
+            </div>
+            <div class="panel-right">
+              <textarea id="nginx-output" readonly></textarea>
+              <div class="actions"><button class="btn btn-primary" onclick="formatNginx()">格式化</button><button class="btn" onclick="copyText('nginx-output')">复制</button></div>
+              <p id="nginx-stats" class="stats"></p>
             </div>
           </div>
         </div>
@@ -2953,6 +2973,149 @@
     function yamlToJson() {
       try { $('yaml-output').value = JSON.stringify(simpleYamlToObject($('yaml-input').value), null, 2); }
       catch (e) { $('yaml-output').value = '转换失败：' + e.message; }
+    }
+
+    // ===== Nginx 格式化 =====
+    function tokenizeNginx(text) {
+      const tokens = [];
+      let i = 0;
+      let nl = 1;
+      let sb = false;
+      const n = text.length;
+      while (i < n) {
+        const ch = text[i];
+        if (ch === '\n') { nl++; sb = true; i++; continue; }
+        if (ch === '\r' || ch === ' ' || ch === '\t') { sb = true; i++; continue; }
+        if (ch === '#') {
+          let j = i;
+          while (j < n && text[j] !== '\n') j++;
+          tokens.push({ type: 'comment', value: text.slice(i, j), nl, sb });
+          i = j; nl = 0; sb = false;
+          continue;
+        }
+        if (ch === ';') { tokens.push({ type: ';', value: ';', nl, sb }); i++; nl = 0; sb = false; continue; }
+        if (ch === '}') { tokens.push({ type: '}', value: '}', nl, sb }); i++; nl = 0; sb = false; continue; }
+        if (ch === '{') {
+          // 正则量词如 {2} {2,} {2,4} 属于表达式一部分，不是代码块
+          const m = text.slice(i + 1).match(/^\s*(\d*)(,?)(\d*)\s*\}/);
+          if (m && (m[1] || m[2] || m[3])) {
+            tokens.push({ type: 'word', value: '{' + m[0], nl, sb });
+            i += 1 + m[0].length;
+            nl = 0; sb = false;
+            continue;
+          }
+          tokens.push({ type: '{', value: '{', nl, sb }); i++; nl = 0; sb = false; continue;
+        }
+        if (ch === '"' || ch === "'") {
+          const quote = ch;
+          let j = i + 1;
+          let buf = quote;
+          while (j < n) {
+            const c = text[j];
+            if (c === '\\' && j + 1 < n) { buf += c + text[j + 1]; j += 2; continue; }
+            buf += c; j++;
+            if (c === quote) break;
+          }
+          tokens.push({ type: 'word', value: buf, nl, sb });
+          i = j; nl = 0; sb = false; continue;
+        }
+        let j = i;
+        let buf = '';
+        while (j < n && !/[\s{};]/.test(text[j]) && text[j] !== '#') { buf += text[j]; j++; }
+        tokens.push({ type: 'word', value: buf, nl, sb });
+        i = j; nl = 0; sb = false;
+      }
+      return tokens;
+    }
+
+    function formatNginxConfig(text, opts = {}) {
+      opts = Object.assign({ indentSize: 4, keepBlank: true }, opts);
+      const pad = ' '.repeat(opts.indentSize);
+      text = String(text == null ? '' : text).replace(/^\uFEFF/, '');
+      if (!text.trim()) return { text: '', linesOut: 0, openBraces: 0 };
+      const tokens = tokenizeNginx(text);
+      const out = [];
+      let indent = 0;
+      let pending = [];
+      let wantBlank = false;
+      let lastLine = null;
+      let openBraces = 0;
+
+      function renderPending() {
+        let line = '';
+        for (const tok of pending) {
+          const v = tok.value;
+          if (v === ';') line += v;
+          else if (v === '{') line += (line ? ' ' : '') + v;
+          else if (!line) line = v;
+          else line += (tok.sb ? ' ' : '') + v;
+        }
+        return line;
+      }
+
+      function emitLine(content, options = {}) {
+        const { blank = wantBlank, level = indent } = options;
+        if (blank && opts.keepBlank && out.length && out[out.length - 1] !== '') out.push('');
+        out.push(pad.repeat(level) + content);
+        lastLine = { index: out.length - 1 };
+        wantBlank = false;
+      }
+
+      for (const t of tokens) {
+        if (t.nl >= 2) wantBlank = true;
+        if (t.type === 'comment') {
+          if (pending.length) { pending.push(t); continue; }
+          if (t.nl === 0 && lastLine && lastLine.index === out.length - 1) {
+            out[lastLine.index] += '  ' + t.value;
+            continue;
+          }
+          emitLine(t.value);
+          continue;
+        }
+        if (t.type === '{') {
+          pending.push(t);
+          emitLine(renderPending());
+          pending = [];
+          wantBlank = false;
+          indent++;
+          openBraces++;
+          continue;
+        }
+        if (t.type === '}') {
+          if (pending.length) { emitLine(renderPending()); pending = []; }
+          wantBlank = false;
+          indent = Math.max(0, indent - 1);
+          emitLine('}', { blank: false, level: indent });
+          openBraces--;
+          continue;
+        }
+        if (t.type === ';') {
+          pending.push(t);
+          emitLine(renderPending());
+          pending = [];
+          continue;
+        }
+        pending.push(t);
+      }
+      if (pending.length) emitLine(renderPending());
+      return { text: out.join('\n') + '\n', linesOut: out.length, openBraces };
+    }
+
+    function formatNginx() {
+      const input = $('nginx-input').value;
+      const output = $('nginx-output');
+      const stats = $('nginx-stats');
+      if (!input.trim()) { output.value = ''; stats.textContent = '请输入 nginx 配置'; return; }
+      const res = formatNginxConfig(input, {
+        indentSize: $('nginx-indent-2').checked ? 2 : 4,
+        keepBlank: !$('nginx-no-blank').checked
+      });
+      output.value = res.text;
+      const srcLines = input.split(/\r?\n/).length;
+      let warn = '';
+      if (res.openBraces > 0) warn = `，警告：有 ${res.openBraces} 个 { 未闭合`;
+      else if (res.openBraces < 0) warn = `，警告：有 ${-res.openBraces} 个多余的 }`;
+      stats.textContent = `${srcLines} 行 → ${res.linesOut} 行${warn}`;
     }
 
     function ipToInt(ip) {
