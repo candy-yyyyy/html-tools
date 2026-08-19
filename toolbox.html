@@ -463,6 +463,38 @@
       min-height: min(68vh, 680px);
       resize: vertical;
     }
+    .sync-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 70;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      background: rgba(31, 41, 51, .38);
+    }
+    .sync-modal[hidden] { display: none; }
+    .sync-modal-dialog {
+      width: min(560px, 100%);
+      max-height: calc(100vh - 36px);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 14px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      box-shadow: 0 24px 70px rgba(31, 41, 51, .24);
+      overflow-y: auto;
+    }
+    .sync-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 8px;
+    }
+    .sync-modal-title { margin: 0; font-size: 15px; }
     .image-drop-zone {
       display: grid;
       place-items: center;
@@ -562,6 +594,7 @@
         <p class="subtitle">本地可用的常用开发工具集合，所有处理都在浏览器内完成。</p>
       </div>
       <div class="header-actions">
+        <button class="btn" id="open-sync-modal" type="button">数据同步</button>
         <button class="btn btn-danger" id="reset-all-state" type="button">全部重置</button>
       </div>
     </header>
@@ -600,6 +633,30 @@
       </div>
     </div>
 
+    <div class="sync-modal" id="sync-modal" hidden>
+      <div class="sync-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="sync-modal-title">
+        <div class="sync-modal-header">
+          <h3 class="sync-modal-title" id="sync-modal-title">数据同步</h3>
+          <button class="btn" id="sync-modal-close" type="button">关闭</button>
+        </div>
+        <div class="form-group"><label>平台</label><select id="sync-platform"><option value="github">GitHub</option></select></div>
+        <div class="grid-2">
+          <div class="form-group"><label>仓库（owner/repo）</label><input id="sync-repo" type="text" placeholder="tangguo95/html-tools"></div>
+          <div class="form-group"><label>分支</label><input id="sync-branch" type="text" value="main" placeholder="main"></div>
+        </div>
+        <div class="form-group"><label>同步文件路径</label><input id="sync-path" type="text" value="toolbox-state.json"></div>
+        <div class="form-group"><label>访问令牌 Token</label><input id="sync-token" type="password" placeholder="GitHub Personal Access Token"></div>
+        <div class="form-group"><label>同步密码（可选，加密上传）</label><input id="sync-password" type="password" placeholder="留空则明文上传"></div>
+        <p class="helper-text">Token 仅保存在本地浏览器，直接请求 GitHub API。剪贴板历史、JSON 报文记录等敏感数据建议设置同步密码加密后上传，仓库中只保存密文。</p>
+        <div class="actions">
+          <button class="btn btn-primary" id="sync-upload-btn" onclick="syncUpload()">上传同步</button>
+          <button class="btn" id="sync-download-btn" onclick="syncDownload()">下载同步</button>
+          <button class="btn" id="sync-test-btn" onclick="syncTest()">测试连接</button>
+        </div>
+        <div id="sync-status" class="result-box"></div>
+      </div>
+    </div>
+
     <main class="layout">
       <nav class="tabs" aria-label="工具列表">
         <button class="tab-btn active" data-tab="password">密码生成器</button>
@@ -630,7 +687,6 @@
         <button class="tab-btn" data-tab="splitter">文本分隔</button>
         <button class="tab-btn" data-tab="statistics">文本统计</button>
         <button class="tab-btn" data-tab="clipboard">剪贴板历史</button>
-        <button class="tab-btn" data-tab="sync">数据同步</button>
       </nav>
 
       <section>
@@ -1083,31 +1139,6 @@
           <div id="clipboard-msg" class="alert"></div>
           <div id="clipboard-history" class="history-list"></div>
         </div>
-
-        <div class="tool-panel has-row" id="sync-panel">
-          <h2 class="tool-title">数据同步</h2>
-          <div class="panel-row">
-            <div class="panel-left">
-              <div class="form-group"><label>平台</label><select id="sync-platform"><option value="github">GitHub</option></select></div>
-              <div class="grid-2">
-                <div class="form-group"><label>仓库（owner/repo）</label><input id="sync-repo" type="text" placeholder="tangguo95/html-tools"></div>
-                <div class="form-group"><label>分支</label><input id="sync-branch" type="text" value="main" placeholder="main"></div>
-              </div>
-              <div class="form-group"><label>同步文件路径</label><input id="sync-path" type="text" value="toolbox-state.json"></div>
-              <div class="form-group"><label>访问令牌 Token</label><input id="sync-token" type="password" placeholder="GitHub Personal Access Token"></div>
-              <div class="form-group"><label>同步密码（可选，加密上传）</label><input id="sync-password" type="password" placeholder="留空则明文上传"></div>
-              <p class="helper-text">Token 仅保存在本地浏览器，直接请求 GitHub API。剪贴板历史、JSON 报文记录等敏感数据建议设置同步密码加密后上传，仓库中只保存密文。</p>
-            </div>
-            <div class="panel-right">
-              <div class="actions">
-                <button class="btn btn-primary" id="sync-upload-btn" onclick="syncUpload()">上传同步</button>
-                <button class="btn" id="sync-download-btn" onclick="syncDownload()">下载同步</button>
-                <button class="btn" id="sync-test-btn" onclick="syncTest()">测试连接</button>
-              </div>
-              <div id="sync-status" class="result-box flex-1"></div>
-            </div>
-          </div>
-        </div>
       </section>
     </main>
   </div>
@@ -1145,7 +1176,7 @@
         if (el.type === 'file' || el.type === 'hidden') return false;
         if (el.closest('#jsoncompare-panel') || el.closest('#jsonnote-panel')) return false;
         if (el.closest('#jsonnote-zoom')) return false;
-        if (el.closest('#sync-panel')) return false;
+        if (el.closest('#sync-modal')) return false;
         return true;
       });
     }
@@ -3206,6 +3237,17 @@
       el.style.color = type === 'error' ? 'var(--danger)' : type === 'warn' ? 'var(--accent-2)' : '';
     }
 
+    function openSyncModal() {
+      loadSyncConfigToForm();
+      $('sync-modal').hidden = false;
+      const tokenInput = $('sync-token');
+      if (!tokenInput.value) setTimeout(() => tokenInput.focus(), 30);
+    }
+
+    function closeSyncModal() {
+      $('sync-modal').hidden = true;
+    }
+
     function collectAllData() {
       const payload = {};
       [APP_STATE_KEY, JSON_NOTE_KEY, HISTORY_KEY].forEach(key => {
@@ -3511,6 +3553,12 @@
       $('sql-output').addEventListener('click', event => event.currentTarget.focus());
       ['base-input','base-from','base-to'].forEach(id => $(id).addEventListener(id === 'base-input' ? 'input' : 'change', convertBase));
       ['unit-value','unit-from','unit-to'].forEach(id => $(id).addEventListener('input', convertUnit));
+      $('open-sync-modal').addEventListener('click', openSyncModal);
+      $('sync-modal-close').addEventListener('click', closeSyncModal);
+      $('sync-modal').addEventListener('click', event => { if (event.target === $('sync-modal')) closeSyncModal(); });
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && !$('sync-modal').hidden) closeSyncModal();
+      });
       loadSyncConfigToForm();
     });
   </script>
